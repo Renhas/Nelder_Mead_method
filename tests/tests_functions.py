@@ -1,8 +1,10 @@
 import pytest
 import sympy as sm
+from functions import BaseFunction
 
 
 variables = sm.symbols("x1:10")
+
 
 class TestBaseFunction:
     @pytest.mark.parametrize(
@@ -19,13 +21,22 @@ class TestBaseFunction:
 
     @pytest.mark.parametrize(
         ("expression", "expr_var",  "test_input", "test_output"), [
-            (2.0*sm.ln(variables[0]), [variables[0]], [sm.E], 2.0)
+            (2.0*sm.ln(variables[0]), {variables[0]}, [sm.E], 2.0)
         ]
 
     )
     def test_calculate(self, expression, expr_var, test_input, test_output):
         func = BaseFunction(expression, expr_var)
-        assert func.calulate(test_input) == test_output
+        assert func.calculate(test_input) == test_output
+
+    @pytest.mark.parametrize(
+        ("expression", "expr_var", "view"), [
+            (2.0*sm.ln(variables[0]), {variables[0]}, "2.0*log(x1)")
+        ]
+    )
+    def test_str(self, expression, expr_var, view):
+        func = BaseFunction(expression, expr_var)
+        assert str(func) == view
 
 
 class TestPolynomial:
