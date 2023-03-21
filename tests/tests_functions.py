@@ -1,6 +1,7 @@
 import pytest
 import sympy as sm
-from functions import BaseFunction, Polynomial
+from functions import BaseFunction, Polynomial, Rosenbroke
+
 
 
 variables = sm.symbols("x1:10")
@@ -43,7 +44,8 @@ class TestPolynomial:
     @pytest.mark.parametrize(
         ("coefficients", "view", "variable_count"), [
             ([[2, 3], [3, 4]],
-             2 * variables[0] + 3 * variables[0] ** 2 + 3 * variables[1] + 4 * variables[1] ** 2,
+             2 * variables[0] + 3 * variables[0] ** 2 +
+             3 * variables[1] + 4 * variables[1] ** 2,
              2)
         ]
     )
@@ -63,4 +65,19 @@ class TestPolynomial:
         poly = Polynomial(coefficients)
         assert poly.calculate(test_input) == test_output
 
+
+class TestRosenbroke:
+
+    def test_create(self):
+        x_var, y_var = sm.symbols("x, y")
+        assert Rosenbroke().expr == (1 - x_var)**2 + 100*(y_var - x_var**2)**2
+        assert Rosenbroke().dimension == 2
+
+    @pytest.mark.parametrize(
+        ("test_input", "test_output"), [
+            ([1, 1], 0)
+        ]
+    )
+    def test_calculate(self, test_input, test_output):
+        assert Rosenbroke().calculate(test_input) == test_output
 
