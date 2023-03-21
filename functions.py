@@ -27,3 +27,13 @@ class BaseFunction:
     @property
     def variables(self):
         return self.__variables
+
+
+class Polynomial(BaseFunction):
+    def __init__(self, coefficients: list):
+        variables = sm.symbols(f"x1:{len(coefficients)+1}")
+        expr = 0 * variables[0]
+        for var_index, variable in enumerate(coefficients):
+            for val_index, value in enumerate(variable):
+                expr += value * variables[var_index] ** (val_index+1)
+        super().__init__(expr, variables)

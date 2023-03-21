@@ -1,6 +1,6 @@
 import pytest
 import sympy as sm
-from functions import BaseFunction
+from functions import BaseFunction, Polynomial
 
 
 variables = sm.symbols("x1:10")
@@ -43,7 +43,7 @@ class TestPolynomial:
     @pytest.mark.parametrize(
         ("coefficients", "view", "variable_count"), [
             ([[2, 3], [3, 4]],
-             2.0 * variables[0] + 3.0 * variables[0] ** 2 + 3.0 * variables[1] + 4.0 * variables[1] ** 2,
+             2 * variables[0] + 3 * variables[0] ** 2 + 3 * variables[1] + 4 * variables[1] ** 2,
              2)
         ]
     )
