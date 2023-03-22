@@ -2,6 +2,7 @@ import pytest
 import sympy as sm
 from neldermead import NelderMead
 from functions import Polynomial, Rosenbroke, BaseFunction
+from functions import Himmelblau
 
 x_var, y_var = sm.symbols("x,y")
 
@@ -42,6 +43,7 @@ class TestNelderMead:
              [[0, 0], [1, 0], [0, 1]], (-20.99, 0.01)),
             ({"eps0": 0.0001}, Rosenbroke(), [[10, 9], [10, -2], [21, 1]],
              (0, 0.0005)),
+            ({}, Himmelblau(), [[-1.5, 0.5], [-4, 2.5], [-4.5, 5]], (0, 0.01))
 
 
         ]
@@ -50,4 +52,24 @@ class TestNelderMead:
         method = NelderMead(**params)
         method.fit(function, simplex)
         result = method.run()
+        assert result == pytest.approx(expected[0], abs=expected[1])
+
+    @pytest.mark.parametrize(
+        ("params", "function", "simplex", "expected"), [
+            ({"max_steps": 10},
+             BaseFunction(expr=x_var ** 2 + x_var * y_var + y_var ** 2
+                               - 6 * x_var - 9 * y_var, var=(x_var, y_var)),
+             [[0, 0], [1, 0], [0, 1]], ([1, 4], 0.1)),
+            ({"eps0": 0.0001}, Rosenbroke(), [[10, 9], [10, -2], [21, 1]],
+             ([1, 1], 0.01)),
+            ({}, Himmelblau(), [[-1.5, 0.5], [-4, 2.5], [-4.5, 5]],
+             ([-2.805, 3.131], 0.001))
+
+        ]
+    )
+    def test_answer(self, params, function, simplex, expected):
+        method = NelderMead(**params)
+        method.fit(function, simplex)
+        method.run()
+        result = method.simplex[0]
         assert result == pytest.approx(expected[0], abs=expected[1])

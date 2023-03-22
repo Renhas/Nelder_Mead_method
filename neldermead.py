@@ -140,3 +140,11 @@ class NelderMead:
             return True
         else:
             return False
+
+    def __str__(self):
+        return f"Params: alpha = {self.__alpha}, betta = {self.__betta}," \
+               f" gamma = {self.__gamma}\n" \
+               f"steps = {self.__max_steps}, accuracy = {self.__eps0}\n" \
+               f"Function: {self.__function.expr}\n" \
+               f"Simplex: {self.__simplex}"
+
