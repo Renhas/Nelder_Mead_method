@@ -3,8 +3,8 @@ import sympy as sm
 from functions import BaseFunction, Polynomial, Rosenbroke
 
 
-
 variables = sm.symbols("x1:10")
+x_var, y_var = sm.symbols("x,y")
 
 
 class TestBaseFunction:
@@ -22,7 +22,9 @@ class TestBaseFunction:
 
     @pytest.mark.parametrize(
         ("expression", "expr_var",  "test_input", "test_output"), [
-            (2.0*sm.ln(variables[0]), {variables[0]}, [sm.E], 2.0)
+            (2.0*sm.ln(variables[0]), {variables[0]}, [sm.E], 2.0),
+            (x_var**2 + x_var*y_var + y_var**2 - 6*x_var - 9*y_var,
+             {x_var, y_var}, [1, 0], -5)
         ]
 
     )
