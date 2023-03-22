@@ -7,8 +7,9 @@
     Rosenbroke - класс с двумерной функцией Розенброка\n
     Himmelblau - класс с функцией Химмельблау
 """
-import sympy as sm
 from typing import Union
+import sympy as sm
+
 
 
 class BaseFunction:
