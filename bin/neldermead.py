@@ -7,7 +7,7 @@
 """
 import numpy as np
 
-from functions import BaseFunction
+from bin.functions import BaseFunction
 
 
 class NelderMead:
