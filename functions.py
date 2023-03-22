@@ -37,3 +37,10 @@ class Polynomial(BaseFunction):
             for val_index, value in enumerate(variable):
                 expr += value * variables[var_index] ** val_index
         super().__init__(expr, variables)
+
+
+class Rosenbroke(BaseFunction):
+    def __init__(self):
+        variables = sm.symbols("x, y")
+        expr = (1 - variables[0])**2 + 100*(variables[1] - variables[0]**2)**2
+        super().__init__(expr, variables)
