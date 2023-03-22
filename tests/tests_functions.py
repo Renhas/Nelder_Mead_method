@@ -9,8 +9,8 @@
 """
 import pytest
 import sympy as sm
-from functions import BaseFunction, Polynomial, Rosenbroke
-from functions import Himmelblau
+from bin.functions import BaseFunction, Polynomial, Rosenbroke
+from bin.functions import Himmelblau
 
 # Символы для символьных выражений
 variables = sm.symbols("x1:10")
@@ -21,9 +21,9 @@ class TestBaseFunction:
     """Класс тестирования базовой функции
 
     Методы:
-        test_create(sympy.Expr, tuple) - тестирование создания экземпляра
-        test_calculate(sympy.Expr, tuple, list, float, float) - тестирование
-        вычисления функции
+        test_create(sympy.Expr, tuple) - тестирование создания экземпляра\n
+        test_calculate(sympy.Expr, tuple, list, tuple) - тестирование
+        вычисления функции\n
         test_str(sympy.Expr, tuple, str) - тестирование
         строкового представления функции
     """
@@ -45,26 +45,25 @@ class TestBaseFunction:
         assert func.variables == expr_var
 
     @pytest.mark.parametrize(
-        ("expression", "expr_var",  "test_input", "test_output", "accuracy"), [
-            (2.0*sm.ln(variables[0]), (variables[0],), [sm.E], 2.0, 1),
+        ("expression", "expr_var",  "test_input", "expected"), [
+            (2.0*sm.ln(variables[0]), (variables[0],), [sm.E], (2.0, 1)),
             (x_var**2 + x_var*y_var + y_var**2 - 6*x_var - 9*y_var,
-             (x_var, y_var), [1, 0], -5, 1)
+             (x_var, y_var), [1, 0], (-5, 1))
         ]
 
     )
     def test_calculate(self, expression: sm.Expr, expr_var: tuple,
-                       test_input: list, test_output: float, accuracy: float):
+                       test_input: list, expected: tuple):
         """Тестирования вычисления функции
 
         :param expression: символьное выражение
         :param expr_var: кортеж символов-переменных
         :param test_input: значения переменных
-        :param test_output: ожидаемое значение
-        :param accuracy: точность сравнения
+        :param expected: кортеж с ожидаемым значением и точностью сравнения
         """
         func = BaseFunction(expression, expr_var)
         result = func.calculate(test_input)
-        assert result == pytest.approx(test_output, abs=accuracy)
+        assert result == pytest.approx(expected[0], abs=expected[1])
 
     @pytest.mark.parametrize(
         ("expression", "expr_var", "view"), [
@@ -188,5 +187,3 @@ class TestHimmelblau:
         """
         result = Himmelblau().calculate(test_input)
         assert result == pytest.approx(test_output, abs=accuracy)
-
-

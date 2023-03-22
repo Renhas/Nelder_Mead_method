@@ -6,7 +6,6 @@
     NelderMead - класс, реализующий метод Нелдера-Мида
 """
 import numpy as np
-import sympy
 
 from functions import BaseFunction
 
@@ -24,6 +23,9 @@ class NelderMead:
         fit - задание функции и начального симплекса
         run - запуск алгоритма
     """
+
+    # pylint: disable=too-many-instance-attributes
+    # Nine is reasonable in this case :)
     def __init__(self, *,
                  alpha: float = 1, betta: float = 0.5, gamma: float = 2,
                  max_steps: int = 1000, eps0: float = 0.001,
@@ -45,7 +47,7 @@ class NelderMead:
         self.__eps0 = eps0
         self.__eps1 = eps1
         self.__max_blank = max_blank
-        self.__simplex = list()
+        self.__simplex = []
         self.__function = None
 
     @property
@@ -84,6 +86,7 @@ class NelderMead:
 
         :param function: оптимизируемая функция как экземпляр BaseFunction
         :param simplex: начальный симплекс как двумерный список точек
+
         :exception: AttributeError
         """
         # Проверки входных данных
@@ -145,6 +148,7 @@ class NelderMead:
             if self.__stop():
                 break
             iteration += 1
+        self.__simplex.sort(key=lambda x: x[1])
         return self.__simplex[0][1]
 
     def __check_simp(self) -> None:
@@ -154,7 +158,7 @@ class NelderMead:
         """
         if not isinstance(self.__simplex, list):
             raise AttributeError("Simplex is not list")
-        elif len(self.__simplex) != self.__function.dimension + 1:
+        if len(self.__simplex) != self.__function.dimension + 1:
             raise AttributeError("Simplex length less than dimension + 1")
         for point in self.__simplex:
             if len(point) != self.__function.dimension:
@@ -183,7 +187,7 @@ class NelderMead:
 
         :return: список кортежей из точек и их значения
         """
-        points_with_values = list()
+        points_with_values = []
         for point in self.__simplex:
             value = self.__function.calculate(list(point))
             points_with_values.append((point, value))
@@ -243,10 +247,7 @@ class NelderMead:
         """
         points = [point for (point, value) in self.__simplex]
         dispersion = np.var(points)
-        if dispersion < self.__eps0:
-            return True
-        else:
-            return False
+        return dispersion < self.__eps0
 
     def __str__(self) -> str:
         """Строковое представление текущего состояния метода
@@ -258,4 +259,3 @@ class NelderMead:
                f"steps = {self.__max_steps}, accuracy = {self.__eps0}\n" \
                f"Function: {self.__function.expr}\n" \
                f"Simplex: {self.__simplex}"
-

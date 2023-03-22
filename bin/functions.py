@@ -7,7 +7,6 @@
     Rosenbroke - класс с двумерной функцией Розенброка\n
     Himmelblau - класс с функцией Химмельблау
 """
-import sympy
 import sympy as sm
 
 
@@ -55,7 +54,7 @@ class BaseFunction:
         return self.__expression.subs(zip(self.__variables, data))
 
     @property
-    def expr(self) -> sympy.Expr:
+    def expr(self) -> sm.Expr:
         """
         Возвращает символьное выражение
 
