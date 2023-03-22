@@ -35,5 +35,5 @@ class Polynomial(BaseFunction):
         expr = 0 * variables[0]
         for var_index, variable in enumerate(coefficients):
             for val_index, value in enumerate(variable):
-                expr += value * variables[var_index] ** (val_index+1)
+                expr += value * variables[var_index] ** val_index
         super().__init__(expr, variables)

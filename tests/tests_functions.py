@@ -43,7 +43,7 @@ class TestBaseFunction:
 class TestPolynomial:
     @pytest.mark.parametrize(
         ("coefficients", "view", "variable_count"), [
-            ([[2, 3], [3, 4]],
+            ([[0, 2, 3], [0, 3, 4]],
              2 * variables[0] + 3 * variables[0] ** 2 +
              3 * variables[1] + 4 * variables[1] ** 2,
              2)
@@ -56,9 +56,9 @@ class TestPolynomial:
 
     @pytest.mark.parametrize(
         ("coefficients", "test_input", "test_output"), [
-            ([[2, 3], [3, 4]], [0, 0], 0.0),
-            ([[2, 3], [3, 4]], [1, 2], 27.0),
-            ([[1], [2, 1]], [1, 1], 4.0)
+            ([[0, 2, 3], [0, 3, 4]], [0, 0], 0.0),
+            ([[0, 2, 3], [0, 3, 4]], [1, 2], 27.0),
+            ([[0, 1], [0, 2, 1]], [1, 1], 4.0)
         ]
     )
     def test_calculate(self, coefficients, test_input, test_output):
