@@ -1,6 +1,7 @@
 import pytest
 import sympy as sm
 from functions import BaseFunction, Polynomial, Rosenbroke
+from functions import Himmelblau
 
 
 variables = sm.symbols("x1:10")
@@ -10,7 +11,7 @@ x_var, y_var = sm.symbols("x,y")
 class TestBaseFunction:
     @pytest.mark.parametrize(
         ("expression", "expr_var"), [
-            (sm.sin(variables[0] + sm.cos(variables[1])), {variables[0], variables[1]}),
+            (sm.sin(variables[0] + sm.cos(variables[1])), (variables[0], variables[1])),
 
         ]
     )
@@ -24,7 +25,7 @@ class TestBaseFunction:
         ("expression", "expr_var",  "test_input", "test_output"), [
             (2.0*sm.ln(variables[0]), {variables[0]}, [sm.E], 2.0),
             (x_var**2 + x_var*y_var + y_var**2 - 6*x_var - 9*y_var,
-             {x_var, y_var}, [1, 0], -5)
+             (x_var, y_var), [1, 0], -5)
         ]
 
     )
@@ -34,7 +35,7 @@ class TestBaseFunction:
 
     @pytest.mark.parametrize(
         ("expression", "expr_var", "view"), [
-            (2.0*sm.ln(variables[0]), {variables[0]}, "2.0*log(x1)")
+            (2.0*sm.ln(variables[0]), (variables[0]), "2.0*log(x1)")
         ]
     )
     def test_str(self, expression, expr_var, view):
@@ -71,7 +72,6 @@ class TestPolynomial:
 class TestRosenbroke:
 
     def test_create(self):
-        x_var, y_var = sm.symbols("x, y")
         assert Rosenbroke().expr == (1 - x_var)**2 + 100*(y_var - x_var**2)**2
         assert Rosenbroke().dimension == 2
 
@@ -81,5 +81,26 @@ class TestRosenbroke:
         ]
     )
     def test_calculate(self, test_input, test_output):
-        assert Rosenbroke().calculate(test_input) == test_output
+        result = Rosenbroke().calculate(test_input)
+        assert result == pytest.approx(test_output)
+
+
+class TestHimmelblau:
+    def test_create(self):
+        expected = (x_var**2 + y_var - 11) ** 2 + (x_var + y_var**2 - 7) ** 2
+        assert Himmelblau().expr == expected
+        assert Himmelblau().dimension == 2
+
+    @pytest.mark.parametrize(
+        ("test_input", "test_output", "accuracy"), [
+            ([-0.270845, -0.923039], 181.617, 0.005),
+            ([3, 2], 0, 0),
+            pytest.param([0, 0], 0, 0, marks=pytest.mark.xfail(strict=True)),
+            ([-2.805118, 3.131312], 0, 0.1)
+        ]
+    )
+    def test_calculate(self, test_input, test_output, accuracy):
+        result = Himmelblau().calculate(test_input)
+        assert result == pytest.approx(test_output, abs=accuracy)
+
 

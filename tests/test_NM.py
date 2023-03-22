@@ -38,7 +38,7 @@ class TestNelderMead:
         ("params", "function", "simplex", "expected"), [
             ({"max_steps": 10},
              BaseFunction(expr=x_var**2 + x_var*y_var + y_var**2
-                               - 6*x_var - 9*y_var, var={x_var, y_var}),
+                               - 6*x_var - 9*y_var, var=(x_var, y_var)),
              [[0, 0], [1, 0], [0, 1]], (-20.99, 0.01)),
             ({"eps0": 0.0001}, Rosenbroke(), [[10, 9], [10, -2], [21, 1]],
              (0, 0.0005)),

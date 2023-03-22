@@ -3,7 +3,7 @@ import sympy as sm
 
 class BaseFunction:
 
-    def __init__(self, expr: sm.Expr, var: set):
+    def __init__(self, expr: sm.Expr, var: tuple):
         self.__expression = expr
         self.__variables = var
         self.__dimension = len(var)
@@ -44,3 +44,10 @@ class Rosenbroke(BaseFunction):
         variables = sm.symbols("x, y")
         expr = (1 - variables[0])**2 + 100*(variables[1] - variables[0]**2)**2
         super().__init__(expr, variables)
+
+
+class Himmelblau(BaseFunction):
+    def __init__(self):
+        x_var, y_var = sm.symbols("x, y")
+        expr = (x_var**2 + y_var - 11) ** 2 + (x_var + y_var**2 - 7) ** 2
+        super().__init__(expr, (x_var, y_var))
