@@ -6,9 +6,9 @@
 """
 import pytest
 import sympy as sm
-from bin.neldermead import NelderMead
-from bin.functions import Rosenbroke, BaseFunction
-from bin.functions import Himmelblau
+from neldermead import NelderMead
+from functions import Rosenbroke, BaseFunction
+from functions import Himmelblau
 
 # Символы для символьных выражений
 x_var, y_var = sm.symbols("x,y")

@@ -9,8 +9,8 @@
 """
 import pytest
 import sympy as sm
-from bin.functions import BaseFunction, Polynomial, Rosenbroke
-from bin.functions import Himmelblau
+from functions import BaseFunction, Polynomial, Rosenbroke
+from functions import Himmelblau
 
 # Символы для символьных выражений
 variables = sm.symbols("x1:10")
