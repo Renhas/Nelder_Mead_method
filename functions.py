@@ -8,6 +8,7 @@
     Himmelblau - класс с функцией Химмельблау
 """
 import sympy as sm
+from typing import Union
 
 
 class BaseFunction:
@@ -40,7 +41,7 @@ class BaseFunction:
         """
         return str(self.__expression)
 
-    def calculate(self, data: list) -> float | sm.Expr:
+    def calculate(self, data: list) -> Union[float, sm.Expr]:
         """
         Подстановка чисел или символов вместо переменных,
         а также последующее вычисление или упрощение выражения
