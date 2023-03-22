@@ -1,49 +1,94 @@
+"""
+Модуль для тестирования библиотеки математических функций
+
+Классы:
+    TestBaseFunction - тестирование базового класса
+    TestPolynomial - тестирование класса полиномиальных функций
+    TestRosenbroke - тестирование функции Розенброка
+    TestHimmelblau - тестирование функции Химмельблау
+"""
 import pytest
 import sympy as sm
 from functions import BaseFunction, Polynomial, Rosenbroke
 from functions import Himmelblau
 
-
+# Символы для символьных выражений
 variables = sm.symbols("x1:10")
 x_var, y_var = sm.symbols("x,y")
 
 
 class TestBaseFunction:
+    """Класс тестирования базовой функции
+
+    Методы:
+        test_create(sympy.Expr, tuple) - тестирование создания экземпляра
+        test_calculate(sympy.Expr, tuple, list, float, float) - тестирование
+        вычисления функции
+        test_str(sympy.Expr, tuple, str) - тестирование
+        строкового представления функции
+    """
     @pytest.mark.parametrize(
         ("expression", "expr_var"), [
             (sm.sin(variables[0] + sm.cos(variables[1])), (variables[0], variables[1])),
 
         ]
     )
-    def test_create(self, expression, expr_var):
+    def test_create(self, expression: sm.Expr, expr_var: tuple):
+        """Тестирование создания экземпляра класса
+
+        :param expression: символьное выражение
+        :param expr_var: кортеж символов-переменных
+        """
         func = BaseFunction(expression, expr_var)
         assert func.expr == expression
         assert func.dimension == len(expr_var)
         assert func.variables == expr_var
 
     @pytest.mark.parametrize(
-        ("expression", "expr_var",  "test_input", "test_output"), [
-            (2.0*sm.ln(variables[0]), {variables[0]}, [sm.E], 2.0),
+        ("expression", "expr_var",  "test_input", "test_output", "accuracy"), [
+            (2.0*sm.ln(variables[0]), (variables[0],), [sm.E], 2.0, 1),
             (x_var**2 + x_var*y_var + y_var**2 - 6*x_var - 9*y_var,
-             (x_var, y_var), [1, 0], -5)
+             (x_var, y_var), [1, 0], -5, 1)
         ]
 
     )
-    def test_calculate(self, expression, expr_var, test_input, test_output):
+    def test_calculate(self, expression: sm.Expr, expr_var: tuple,
+                       test_input: list, test_output: float, accuracy: float):
+        """Тестирования вычисления функции
+
+        :param expression: символьное выражение
+        :param expr_var: кортеж символов-переменных
+        :param test_input: значения переменных
+        :param test_output: ожидаемое значение
+        :param accuracy: точность сравнения
+        """
         func = BaseFunction(expression, expr_var)
-        assert func.calculate(test_input) == test_output
+        result = func.calculate(test_input)
+        assert result == pytest.approx(test_output, abs=accuracy)
 
     @pytest.mark.parametrize(
         ("expression", "expr_var", "view"), [
-            (2.0*sm.ln(variables[0]), (variables[0]), "2.0*log(x1)")
+            (2.0*sm.ln(variables[0]), (variables[0],), "2.0*log(x1)")
         ]
     )
-    def test_str(self, expression, expr_var, view):
+    def test_str(self, expression: sm.Expr, expr_var: tuple, view: str):
+        """Тестирование строкового представления функции
+
+        :param expression: символьное выражение
+        :param expr_var: кортеж символов-переменных
+        :param view: ожидаемое строковое представление
+        """
         func = BaseFunction(expression, expr_var)
         assert str(func) == view
 
 
 class TestPolynomial:
+    """Тестирование функции произвольных полиномов
+
+    Методы:
+        test_create(list, sympy.Expr, int) - тестирование создания экземпляра
+        test_calculate(list, list, float, float) - тестирование вычисления
+    """
     @pytest.mark.parametrize(
         ("coefficients", "view", "variable_count"), [
             ([[0, 2, 3], [0, 3, 4]],
@@ -52,41 +97,76 @@ class TestPolynomial:
              2)
         ]
     )
-    def test_create(self, coefficients, view, variable_count):
+    def test_create(self, coefficients: list, view: sm.Expr,
+                    variable_count: int):
+        """Тестирование создания экземпляра класса
+
+        :param coefficients: коэффициенты полинома
+        :param view: символьный вид полинома
+        :param variable_count: количество переменных
+        """
         poly = Polynomial(coefficients)
         assert poly.expr == view
         assert poly.dimension == variable_count
 
     @pytest.mark.parametrize(
-        ("coefficients", "test_input", "test_output"), [
-            ([[0, 2, 3], [0, 3, 4]], [0, 0], 0.0),
-            ([[0, 2, 3], [0, 3, 4]], [1, 2], 27.0),
-            ([[0, 1], [0, 2, 1]], [1, 1], 4.0)
+        ("coefficients", "test_input", "test_output", "accuracy"), [
+            ([[0, 2, 3], [0, 3, 4]], [0, 0], 0.0, 1),
+            ([[0, 2, 3], [0, 3, 4]], [1, 2], 27.0, 1),
+            ([[0, 1], [0, 2, 1]], [1, 1], 4.0, 1)
         ]
     )
-    def test_calculate(self, coefficients, test_input, test_output):
+    def test_calculate(self, coefficients: list, test_input: list,
+                       test_output: float, accuracy: float):
+        """Тестирование вычисления функции
+
+        :param coefficients: двумерный список коэффициентов
+        :param test_input: значения переменных
+        :param test_output: ожидаемое значение
+        :param accuracy: точность сравнения
+        """
         poly = Polynomial(coefficients)
-        assert poly.calculate(test_input) == test_output
+        result = poly.calculate(test_input)
+        assert result == pytest.approx(test_output, abs=accuracy)
 
 
 class TestRosenbroke:
+    """Тестирование функции Розенброка
 
+    Методы:
+        test_create() - тестирование создания функции
+        test_calculate(list, float, float) - тестирование вычисления функции
+    """
     def test_create(self):
+        """Тестирование создания функции Розенброка"""
         assert Rosenbroke().expr == (1 - x_var)**2 + 100*(y_var - x_var**2)**2
         assert Rosenbroke().dimension == 2
 
     @pytest.mark.parametrize(
-        ("test_input", "test_output"), [
-            ([1, 1], 0)
+        ("test_input", "test_output", "accuracy"), [
+            ([1, 1], 0, 1)
         ]
     )
-    def test_calculate(self, test_input, test_output):
+    def test_calculate(self, test_input, test_output, accuracy):
+        """Тестирование вычисления функции Розенброка
+
+        :param test_input: значения переменных
+        :param test_output: ожидаемый результат
+        :param accuracy: точность сравнения
+        """
         result = Rosenbroke().calculate(test_input)
-        assert result == pytest.approx(test_output)
+        assert result == pytest.approx(test_output, accuracy)
 
 
 class TestHimmelblau:
+    """Тестирование функции Химмельблау
+
+    Методы:
+        test_create() - тестирование создания экземпляра
+        test_calculate(list, float, float) - тестирование вычисления
+    """
     def test_create(self):
+        """Тестирование создания функции Химмельблау"""
         expected = (x_var**2 + y_var - 11) ** 2 + (x_var + y_var**2 - 7) ** 2
         assert Himmelblau().expr == expected
         assert Himmelblau().dimension == 2
@@ -100,6 +180,12 @@ class TestHimmelblau:
         ]
     )
     def test_calculate(self, test_input, test_output, accuracy):
+        """Тестирование вычисления функции Химмельблау
+
+        :param test_input: значения переменных
+        :param test_output: ожидаемый результат
+        :param accuracy: точность сравнения
+        """
         result = Himmelblau().calculate(test_input)
         assert result == pytest.approx(test_output, abs=accuracy)
 

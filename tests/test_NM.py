@@ -1,13 +1,29 @@
+"""
+Тестовый модуль для метода Нелдера-Мида
+
+Классы:
+    TestNelderMead - класс для тестирования метода
+"""
 import pytest
 import sympy as sm
 from neldermead import NelderMead
-from functions import Polynomial, Rosenbroke, BaseFunction
+from functions import Rosenbroke, BaseFunction
 from functions import Himmelblau
 
+# Символы для символьных выражений
 x_var, y_var = sm.symbols("x,y")
 
 
 class TestNelderMead:
+    """Класс для тестирования метода Нелдера-Мида
+
+    Методы:
+        test_create(dict) - тестирование корректного создания экземпляра класса\n
+        test_fit(dict, BaseFunction, list, list) - тестирование инициализации
+        функции и начального симплекса\n
+        test_run(dict, BaseFunction, list, tuple) - тестирование работы метода
+        test_answer(dict, BaseFunction, list, tuple) - тестирование решения
+    """
     @pytest.mark.parametrize(
         "params", [
             ({"alpha": 10, "betta": 0.2, "gamma": 0.003}),
@@ -18,6 +34,10 @@ class TestNelderMead:
         ]
     )
     def test_create(self, params: dict):
+        """Тестирование инициализатора экземпляра класса.
+
+        :param params: словарь параметров
+        """
         method = NelderMead(**params)
         for key, value in params.items():
             assert method.params[key] == value
@@ -29,7 +49,16 @@ class TestNelderMead:
 
         ]
     )
-    def test_fit(self, params, function, simplex, expected):
+    def test_fit(self, params: dict, function: BaseFunction, simplex: list,
+                 expected: list):
+        """Тестирование функции инициализации оптимизируемой функции
+         и начального симплекса
+
+        :param params: словарь параметров
+        :param function: оптимизируемая функция
+        :param simplex: начальный симплекс
+        :param expected: ожидаемый симплекс
+        """
         method = NelderMead(**params)
         method.fit(function, simplex)
         assert method.function == function
@@ -48,7 +77,15 @@ class TestNelderMead:
 
         ]
     )
-    def test_run(self, params, function, simplex, expected):
+    def test_run(self, params: dict, function: BaseFunction, simplex: list,
+                 expected: tuple):
+        """Тестирование работы метода
+
+        :param params: словарь параметров модели
+        :param function: оптимизируемая функция
+        :param simplex: начальный симплекс
+        :param expected: кортеж из ожидаемого значения и точности сравнения
+        """
         method = NelderMead(**params)
         method.fit(function, simplex)
         result = method.run()
@@ -67,7 +104,15 @@ class TestNelderMead:
 
         ]
     )
-    def test_answer(self, params, function, simplex, expected):
+    def test_answer(self, params: dict, function: BaseFunction, simplex: list,
+                    expected: tuple):
+        """Тестирование правильности найденного решения
+
+        :param params: словарь параметров
+        :param function: оптимизируемая функция
+        :param simplex: начальный симплекс
+        :param expected: кортеж из ожидаемого симплекса и точности сравнения
+        """
         method = NelderMead(**params)
         method.fit(function, simplex)
         method.run()
