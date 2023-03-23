@@ -7,9 +7,9 @@
     Rosenbroke - класс с двумерной функцией Розенброка\n
     Himmelblau - класс с функцией Химмельблау
 """
+import numbers
 from typing import Union
 import sympy as sm
-
 
 
 class BaseFunction:
@@ -33,6 +33,22 @@ class BaseFunction:
         self.__expression = expr
         self.__variables = var
         self.__dimension = len(var)
+        self.__check_args()
+
+    def __check_args(self) -> None:
+        """Проверка входных параметров"""
+        expr = self.__expression
+        var = self.__variables
+        if not isinstance(expr, sm.Expr):
+            raise AttributeError("expr should be an sympy.Expr")
+        if len(var) == 0 and len(expr.atoms(sm.Symbol)) != 0:
+            raise AttributeError("In var should be at least one element")
+        if not isinstance(var, tuple):
+            raise AttributeError("var should be a tuple")
+        for variable in var:
+            if variable not in expr.atoms(sm.Symbol):
+                raise AttributeError("var should contain"
+                                     " sympy.Symbol from expr")
 
     def __str__(self) -> str:
         """
@@ -81,6 +97,57 @@ class BaseFunction:
         :return: кортеж символов
         """
         return self.__variables
+
+    def __add__(self, other):
+        """Сложение двух функций или функции и числа
+
+        :param other: экземпляр BaseFunction или число
+
+        :return: новый экземпляр BaseFunction
+        """
+        new_expr = self.__expression
+        new_var = list(self.__variables)
+        if isinstance(other, numbers.Number):
+            new_expr += other
+        elif isinstance(other, BaseFunction):
+            new_expr += other.__expression
+            for var in other.__variables:
+                if var not in new_var:
+                    new_var.append(var)
+        else:
+            raise AttributeError(f"can't add {type(other)} to {type(self)}")
+        return BaseFunction(new_expr, tuple(new_var))
+
+    def __radd__(self, other):
+        """Сложение справа
+
+        :param other: экземпляр BaseFunction или число
+
+        :return: новый экземпляр BaseFunction
+        """
+        return self.__add__(other)
+
+    def __eq__(self, other):
+        """Проверка на равенство двух функций
+
+        :param other: экземпляр BaseFunction
+        :return: bool
+        """
+        if not isinstance(other, BaseFunction):
+            return False
+        if len(other.__variables) != len(self.__variables):
+            return False
+        expr = other.__expression == self.__expression
+        var = other.__variables == self.__variables
+        return expr and var
+
+    def __ne__(self, other):
+        """Проверка на не равенство
+
+        :param other: экземпляр BaseFunction
+        :return: bool
+        """
+        return not self.__eq__(other)
 
 
 class Polynomial(BaseFunction):

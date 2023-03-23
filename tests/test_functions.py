@@ -7,6 +7,8 @@
     TestRosenbroke - тестирование функции Розенброка
     TestHimmelblau - тестирование функции Химмельблау
 """
+import typing
+import numbers
 import pytest
 import sympy as sm
 from functions import BaseFunction, Polynomial, Rosenbroke
@@ -27,9 +29,24 @@ class TestBaseFunction:
         test_str(sympy.Expr, tuple, str) - тестирование
         строкового представления функции
     """
+
     @pytest.mark.parametrize(
         ("expression", "expr_var"), [
-            (sm.sin(variables[0] + sm.cos(variables[1])), (variables[0], variables[1])),
+            (sm.sin(variables[0] + sm.cos(variables[1])),
+             (variables[0], variables[1])),
+            pytest.param(0, (), marks=pytest.mark.xfail(strict=True)),
+            pytest.param(sm.sin(0) + variables[1] * 2, (),
+                         marks=pytest.mark.xfail(strict=True)),
+            pytest.param(variables[1], 0,
+                         marks=pytest.mark.xfail(strict=True)),
+            pytest.param(variables[1], [1, 3],
+                         marks=pytest.mark.xfail(strict=True)),
+            pytest.param(variables[1], (33, "2"),
+                         marks=pytest.mark.xfail(strict=True)),
+            pytest.param(variables[1], (variables[0],),
+                         marks=pytest.mark.xfail(strict=True)),
+            pytest.param(variables[1], [variables[1]],
+                         marks=pytest.mark.xfail(strict=True)),
 
         ]
     )
@@ -45,10 +62,12 @@ class TestBaseFunction:
         assert func.variables == expr_var
 
     @pytest.mark.parametrize(
-        ("expression", "expr_var",  "test_input", "expected"), [
-            (2.0*sm.ln(variables[0]), (variables[0],), [sm.E], (2.0, 1)),
-            (x_var**2 + x_var*y_var + y_var**2 - 6*x_var - 9*y_var,
-             (x_var, y_var), [1, 0], (-5, 1))
+        ("expression", "expr_var", "test_input", "expected"), [
+            (2.0 * sm.ln(variables[0]), (variables[0],), [sm.E], (2.0, 1)),
+            (x_var ** 2 + x_var * y_var + y_var ** 2 - 6 * x_var - 9 * y_var,
+             (x_var, y_var), [1, 0], (-5, 1)),
+            (variables[0] ** 2 + variables[1] ** 3, (variables[0], variables[1]),
+             [1, -1], (0, 1))
         ]
 
     )
@@ -67,7 +86,7 @@ class TestBaseFunction:
 
     @pytest.mark.parametrize(
         ("expression", "expr_var", "view"), [
-            (2.0*sm.ln(variables[0]), (variables[0],), "2.0*log(x1)")
+            (2.0 * sm.ln(variables[0]), (variables[0],), "2.0*log(x1)")
         ]
     )
     def test_str(self, expression: sm.Expr, expr_var: tuple, view: str):
@@ -80,6 +99,46 @@ class TestBaseFunction:
         func = BaseFunction(expression, expr_var)
         assert str(func) == view
 
+    @pytest.mark.parametrize(
+        ("first", "second", "expected"), [
+            (Rosenbroke(), Rosenbroke(), True),
+            (Rosenbroke(), Himmelblau(), False),
+            (BaseFunction(sm.E * variables[0], (variables[0],)),
+             BaseFunction(sm.E * variables[1], (variables[1],)), False),
+            (Rosenbroke(), 34, False)
+        ]
+    )
+    def test_equal(self, first: BaseFunction, second: typing.Any,
+                   expected: bool):
+        assert (first == second) == expected
+
+    @pytest.mark.parametrize(
+        ("functions", "expected"), [
+            ([Rosenbroke(), Rosenbroke()],
+             BaseFunction(2*(1-x_var)**2 + 200*(y_var - x_var**2)**2,
+                          (x_var, y_var))),
+            ([BaseFunction(variables[0] ** 2, (variables[0],)),
+             BaseFunction(sm.E ** 2, ()),
+             BaseFunction(sm.pi / variables[1], (variables[1],)),
+             BaseFunction(variables[2] + 1, (variables[2],))],
+             BaseFunction(variables[0]**2 + sm.E**2+sm.pi/variables[1] +
+                          variables[2] + 1,
+                          (variables[0], variables[1], variables[2]))),
+            ([Rosenbroke(), 35 + 7 ** 12],
+             BaseFunction((1-x_var)**2+100*(y_var - x_var**2)**2 + 35 + 7**12,
+                          (x_var, y_var)))
+
+        ]
+    )
+    def test_sum(self, functions: list, expected: BaseFunction):
+        """Тестирование суммирования функций
+
+        :param functions: список функций
+        """
+        new_function = sum(functions)
+        assert new_function.expr == expected.expr
+        assert new_function.variables == expected.variables
+
 
 class TestPolynomial:
     """Тестирование функции произвольных полиномов
@@ -88,6 +147,7 @@ class TestPolynomial:
         test_create(list, sympy.Expr, int) - тестирование создания экземпляра
         test_calculate(list, list, float, float) - тестирование вычисления
     """
+
     @pytest.mark.parametrize(
         ("coefficients", "view", "variable_count"), [
             ([[0, 2, 3], [0, 3, 4]],
@@ -136,9 +196,10 @@ class TestRosenbroke:
         test_create() - тестирование создания функции
         test_calculate(list, float, float) - тестирование вычисления функции
     """
+
     def test_create(self):
         """Тестирование создания функции Розенброка"""
-        assert Rosenbroke().expr == (1 - x_var)**2 + 100*(y_var - x_var**2)**2
+        assert Rosenbroke().expr == (1 - x_var) ** 2 + 100 * (y_var - x_var ** 2) ** 2
         assert Rosenbroke().dimension == 2
 
     @pytest.mark.parametrize(
@@ -164,9 +225,10 @@ class TestHimmelblau:
         test_create() - тестирование создания экземпляра
         test_calculate(list, float, float) - тестирование вычисления
     """
+
     def test_create(self):
         """Тестирование создания функции Химмельблау"""
-        expected = (x_var**2 + y_var - 11) ** 2 + (x_var + y_var**2 - 7) ** 2
+        expected = (x_var ** 2 + y_var - 11) ** 2 + (x_var + y_var ** 2 - 7) ** 2
         assert Himmelblau().expr == expected
         assert Himmelblau().dimension == 2
 

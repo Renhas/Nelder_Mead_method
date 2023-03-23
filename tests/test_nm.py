@@ -6,7 +6,7 @@
 """
 import pytest
 import sympy as sm
-from neldermead import NelderMead
+from nelder_mead import NelderMead
 from functions import Rosenbroke, BaseFunction
 from functions import Himmelblau
 
@@ -29,7 +29,16 @@ class TestNelderMead:
             ({"alpha": 10, "betta": 0.2, "gamma": 0.003}),
             pytest.param({"zeta": 10, "min_steps": 100},
                          marks=pytest.mark.xfail(strict=True)),
-            ({})
+            ({}),
+            pytest.param({"alpha": -1, "betta": -15},
+                         marks=pytest.mark.xfail(strict=True)),
+            ({"alpha": 0}),
+            pytest.param({"max_steps": 1.5},
+                         marks=pytest.mark.xfail(strict=True)),
+            pytest.param({"alpha": "23"},
+                         marks=pytest.mark.xfail(strict=True)),
+            pytest.param({"eps0": -100},
+                         marks=pytest.mark.xfail(strict=True))
 
         ]
     )

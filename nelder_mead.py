@@ -48,6 +48,7 @@ class NelderMead:
         self.__max_blank = max_blank
         self.__simplex = []
         self.__function = None
+        self.__check_args()
 
     @property
     def params(self) -> dict:
@@ -247,6 +248,19 @@ class NelderMead:
         points = [point for (point, value) in self.__simplex]
         dispersion = np.var(points)
         return dispersion < self.__eps0
+
+    def __check_args(self):
+        """Проверка параметров метода"""
+        if self.__alpha < 0:
+            raise AttributeError("alpha should be >= 0")
+        if self.__betta < 0:
+            raise AttributeError("betta should be >= 0")
+        if self.__gamma < 0:
+            raise AttributeError("gamma should be >= 0")
+        if type(self.__max_steps) != int:
+            raise AttributeError("max_steps should be integer")
+        if self.__eps0 < 0:
+            raise AttributeError("eps0 should be > 0")
 
     def __str__(self) -> str:
         """Строковое представление текущего состояния метода
