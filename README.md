@@ -43,6 +43,7 @@ def foo(m):
 result = method.Run(action=foo)
 ```
 # Структура файлов
+## `gifs` - папка с gif-файлами иллюстрации работы метода
 ## `Tests` - папка с pytest-тестами
 Тестируют классы из модуля `functions.py` и `neldermead.py`
 ## `functions.py` - модуль с классами функций, передаваемых в метод Нелдера-Мида
