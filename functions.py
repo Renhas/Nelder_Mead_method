@@ -110,8 +110,8 @@ class BaseFunction:
         if isinstance(other, numbers.Number):
             new_expr += other
         elif isinstance(other, BaseFunction):
-            new_expr += other.__expression
-            for var in other.__variables:
+            new_expr += other.expr
+            for var in other.variables:
                 if var not in new_var:
                     new_var.append(var)
         else:
@@ -135,10 +135,10 @@ class BaseFunction:
         """
         if not isinstance(other, BaseFunction):
             return False
-        if len(other.__variables) != len(self.__variables):
+        if len(other.variables) != len(self.__variables):
             return False
-        expr = other.__expression == self.__expression
-        var = other.__variables == self.__variables
+        expr = other.expr == self.__expression
+        var = other.variables == self.__variables
         return expr and var
 
     def __ne__(self, other):

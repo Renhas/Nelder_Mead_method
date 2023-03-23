@@ -1,15 +1,14 @@
 """
 Модуль, демонстрирующий работу с классом NelderMead
 """
-from functions import Rosenbroke
-from nelder_mead import NelderMead
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from functions import Rosenbroke
+from nelder_mead import NelderMead
 
 fig, ax = plt.figure(), plt.axes(xlim=(-5, 11), ylim=(0, 14))
 ln, = ax.plot([], [], lw=1)
 all_x, all_y = [], []
-number_of_points = 3
 
 
 def save_points(method: NelderMead):
@@ -18,7 +17,6 @@ def save_points(method: NelderMead):
     :param method: экземпляр класса NelderMead
     """
     points = method.simplex
-    global all_x, all_y
     best, good, worst = points[0], points[-2], points[-1]
     all_x.append([best[0], good[0], worst[0], best[0]])
     all_y.append([best[1], good[1], worst[1], best[1]])
@@ -30,7 +28,7 @@ def init_animation() -> tuple:
     :return: кортеж из одного элемента - линии на графике
     """
     ln.set_data([], [])
-    return ln,
+    return (ln,)
 
 
 def animation(frame: int) -> tuple:
@@ -44,14 +42,13 @@ def animation(frame: int) -> tuple:
     if index > len(all_x) - 1:
         index = len(all_x) - 1
     ln.set_data(all_x[index], all_y[index])
-    return ln,
+    return (ln,)
 
 
 def main():
     """Основная функция, запускающая метод и анимации"""
     plt.title("Симплекс для функции Розенброка, 10 шагов")
     plt.plot(1, 1, "ro")
-    global all_x, all_y, number_of_points
     all_x.append([10, 3, 5, 10])
     all_y.append([2, 5, 8, 2])
     method = NelderMead(max_steps=10)

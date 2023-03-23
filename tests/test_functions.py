@@ -8,7 +8,6 @@
     TestHimmelblau - тестирование функции Химмельблау
 """
 import typing
-import numbers
 import pytest
 import sympy as sm
 from functions import BaseFunction, Polynomial, Rosenbroke
@@ -110,6 +109,12 @@ class TestBaseFunction:
     )
     def test_equal(self, first: BaseFunction, second: typing.Any,
                    expected: bool):
+        """Тестирование сравнения функций
+
+        :param first: Первая функция
+        :param second: Вторая функция
+        :param expected: Ожидаемый результат
+        """
         assert (first == second) == expected
 
     @pytest.mark.parametrize(
@@ -133,7 +138,8 @@ class TestBaseFunction:
     def test_sum(self, functions: list, expected: BaseFunction):
         """Тестирование суммирования функций
 
-        :param functions: список функций
+        :param functions: список функций для сложения
+        :param expected: ожидаемая функция
         """
         new_function = sum(functions)
         assert new_function.expr == expected.expr

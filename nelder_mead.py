@@ -257,7 +257,7 @@ class NelderMead:
             raise AttributeError("betta should be >= 0")
         if self.__gamma < 0:
             raise AttributeError("gamma should be >= 0")
-        if type(self.__max_steps) != int:
+        if not isinstance(self.__max_steps, int):
             raise AttributeError("max_steps should be integer")
         if self.__eps0 < 0:
             raise AttributeError("eps0 should be > 0")
