@@ -49,6 +49,8 @@ class NelderMead:
         self.__simplex = []
         self.__function = None
         self.__check_args()
+        self.__current_blank = 0
+        self.__last_value = 0
 
     @property
     def params(self) -> dict:
@@ -119,15 +121,17 @@ class NelderMead:
             raise AttributeError("No function in class, use fit method")
         # Основной цикл метода
         iteration = 0
+        self.__current_blank = 0
+        # Сортировка точек по значению функции
+        self.__simplex.sort(key=lambda x: x[1])
         while iteration <= self.__max_steps:
-            # Сортировка точек по значению функции
-            self.__simplex.sort(key=lambda x: x[1])
             points = [point for (point, value) in self.__simplex]
 
             # Вычисление необходимых точек
             centroid = 1 / len(points[:-1]) * sum(points[:-1])
             best, good = self.__simplex[0], self.__simplex[-2]
             worst = self.__simplex[-1]
+            self.__last_value = best[1]
             # Отражение
             reflected = self.__reflection(centroid)
             # Выбор замены
@@ -141,6 +145,7 @@ class NelderMead:
                     self.__simplex[-1] = reflected
                 # Сжатие
                 self.__contraction(centroid)
+            self.__simplex.sort(key=lambda x: x[1])
             # Опциональное действие
             if callable(action):
                 action(self)
@@ -148,7 +153,7 @@ class NelderMead:
             if self.__stop():
                 break
             iteration += 1
-        self.__simplex.sort(key=lambda x: x[1])
+            self.__last_value = self.__simplex[0][1]
         return self.__simplex[0][1]
 
     def __check_simp(self) -> None:
@@ -245,6 +250,13 @@ class NelderMead:
 
         :return: булево значение
         """
+        current_value = self.__simplex[0][1]
+        if abs(current_value - self.__last_value) < self.__eps1:
+            self.__current_blank += 1
+        else:
+            self.__current_blank = 0
+        if self.__current_blank == self.__max_blank:
+            return True
         points = [point for (point, value) in self.__simplex]
         dispersion = np.var(points)
         return dispersion < self.__eps0

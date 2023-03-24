@@ -47,19 +47,19 @@ def animation(frame: int) -> tuple:
 
 def main():
     """Основная функция, запускающая метод и анимации"""
-    plt.title("Симплекс для функции Розенброка, 10 шагов")
+    plt.title("Симплекс для функции Розенброка, 100 шагов")
     plt.plot(1, 1, "ro")
     all_x.append([10, 3, 5, 10])
     all_y.append([2, 5, 8, 2])
-    method = NelderMead(max_steps=10)
+    method = NelderMead(max_steps=100, max_blank=20, eps1=0.001)
     method.fit(Rosenbroke(), [[10, 2], [3, 5], [5, 8]])
     method.run(action=save_points)
-    anim = FuncAnimation(fig, animation, init_func=init_animation, frames=20,
-                         interval=300, blit=True)
+    anim = FuncAnimation(fig, animation, init_func=init_animation,
+                         frames=len(all_x) + 10, interval=300, blit=True)
     anim.resume()
     # Для сохранения анимации в файл, уберите комментарии ниже :)
-    # f = r"c://Users/Hasan/Desktop/animation_10.gif"
-    # anim.save(f, writer="imagemagick")
+    # file = r"gifs/animation_100.gif"
+    # anim.save(file, writer="imagemagick")
     plt.show()
 
 
