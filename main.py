@@ -82,8 +82,8 @@ def main():
                          frames=len(all_x), interval=300, blit=False)
     anim.resume()
     # Для сохранения анимации в файл, уберите комментарии ниже :)
-    file = r"gifs/animation_100.gif"
-    anim.save(file, writer="imagemagick")
+    # file = r"gifs/animation_100.gif"
+    # anim.save(file, writer="imagemagick")
     plt.show()
 
 
