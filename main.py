@@ -9,6 +9,7 @@ from sympy.utilities.lambdify import lambdify
 from functions import Rosenbroke, BaseFunction
 from nelder_mead import NelderMead
 
+plt.style.use("dark_background")
 x_limits, y_limits = (-15, 15), (-1, 15)
 fig, ax = plt.figure(), plt.axes(xlim=x_limits, ylim=y_limits)
 ln, = ax.plot([], [], lw=1)
@@ -82,7 +83,7 @@ def main():
                          frames=len(all_x), interval=300, blit=False)
     anim.resume()
     # Для сохранения анимации в файл, уберите комментарии ниже :)
-    # file = r"gifs/animation_100.gif"
+    # file = r"gifs/animation_100_dark.gif"
     # anim.save(file, writer="imagemagick")
     plt.show()
 
