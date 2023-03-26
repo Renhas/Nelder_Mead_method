@@ -62,4 +62,8 @@ result = method.Run(action=foo)
 ## `main.py` - модуль с демонстрацией работы с модулями
 В приведённом примере создаётся анимация изменения симплекса функции Розенброка с каждой итерацией. Красной точкой на графике отображается точка минимума.
 
-![Изменение симплекса функции Розенброка за 100 шагов](gifs/animation_100.gif)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="gifs/animation_100_dark.gif">
+  <source media="(prefers-color-scheme: light)" srcset="gifs/animation_100.gif">
+  <img alt="Изменение симплекса функции Розенброка за 100 шагов" src="gifs/animation_100.gif">
+</picture>
