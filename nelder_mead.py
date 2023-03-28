@@ -284,3 +284,46 @@ class NelderMead:
                f"steps = {self.__max_steps}, accuracy = {self.__eps0}\n" \
                f"Function: {self.__function.expr}\n" \
                f"Simplex: {self.__simplex}"
+
+
+class Simplex:
+    def __init__(self, points: list, function: BaseFunction):
+        self.__function = function
+        self.__points = []
+        if points is None:
+            self.__create_new()
+        else:
+            self.__create_from_points(points)
+        self.sort()
+
+    def __create_from_points(self, points):
+        for point in points:
+            func_value = self.__function.calculate(point)
+            new_point = np.array(point)
+            self.__points.append((new_point, func_value))
+
+    def __create_new(self):
+        self.__points = [np.array([0] * self.__function.dimension)]
+        for point in range(self.__function.dimension):
+            prev_point = self.__points[point]
+            new_point = prev_point
+            while np.equal(prev_point, new_point).all():
+                new_point = np.random.randint(low=(min(prev_point) - 1),
+                                              high=(max(prev_point) + 1),
+                                              size=self.__function.dimension)
+            self.__points.append(new_point)
+
+    def sort(self):
+        self.__points.sort(key=lambda x: x[1])
+
+    @property
+    def best(self):
+        return self.__points[0]
+
+    @property
+    def good(self):
+        return self.__points[-2]
+
+    @property
+    def worst(self):
+        return self.__points[-1]
