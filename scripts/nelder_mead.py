@@ -285,7 +285,6 @@ class NelderMead:
                f"Function: {self.__function.expr}\n" \
                f"Simplex: {self.__simplex}"
 
-
 class Simplex:
     def __init__(self, points: list, function: BaseFunction):
         self.__function = function

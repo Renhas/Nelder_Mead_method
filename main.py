@@ -6,8 +6,8 @@ from matplotlib.text import Text
 from matplotlib.animation import FuncAnimation
 import numpy as np
 from sympy.utilities.lambdify import lambdify
-from functions import Rosenbroke, BaseFunction
-from nelder_mead import NelderMead
+from scripts.functions import Rosenbroke, BaseFunction
+from scripts.nelder_mead import NelderMead
 
 plt.style.use("dark_background")
 x_limits, y_limits = (-15, 15), (-1, 15)
