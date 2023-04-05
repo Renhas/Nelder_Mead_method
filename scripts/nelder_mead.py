@@ -6,7 +6,7 @@
     NelderMead - класс, реализующий метод Нелдера-Мида
 """
 import numpy as np
-from functions import BaseFunction
+from scripts.functions import BaseFunction
 
 
 class NelderMead:
