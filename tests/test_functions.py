@@ -12,6 +12,7 @@ import pytest
 import sympy as sm
 from scripts.functions import BaseFunction, Polynomial, Rosenbroke
 from scripts.functions import Himmelblau
+from scripts.point import Point
 
 # Символы для символьных выражений
 variables = sm.symbols("x1:10")
@@ -66,7 +67,10 @@ class TestBaseFunction:
             (x_var ** 2 + x_var * y_var + y_var ** 2 - 6 * x_var - 9 * y_var,
              (x_var, y_var), [1, 0], (-5, 1)),
             (variables[0] ** 2 + variables[1] ** 3, (variables[0], variables[1]),
-             [1, -1], (0, 1))
+             [1, -1], (0, 1)),
+            (2.0 * sm.ln(variables[0]), (variables[0],), Point(sm.E), (2.0, 1)),
+            (x_var ** 2 + x_var * y_var + y_var ** 2 - 6 * x_var - 9 * y_var,
+             (x_var, y_var), Point(1, 0), (-5, 1))
         ]
 
     )

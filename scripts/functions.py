@@ -10,6 +10,7 @@
 import numbers
 from typing import Union
 import sympy as sm
+from scripts.point import Point
 
 
 class BaseFunction:
@@ -58,7 +59,7 @@ class BaseFunction:
         """
         return str(self.__expression)
 
-    def calculate(self, data: list) -> Union[float, sm.Expr]:
+    def calculate(self, data: Union[list, Point]) -> Union[float, sm.Expr]:
         """
         Подстановка чисел или символов вместо переменных,
         а также последующее вычисление или упрощение выражения
@@ -69,6 +70,8 @@ class BaseFunction:
         """
         if len(data) != self.__dimension:
             raise AttributeError("Data length must be the same as the dimension")
+        if isinstance(data, Point):
+            data = data.values
         return self.__expression.subs(zip(self.__variables, data))
 
     @property

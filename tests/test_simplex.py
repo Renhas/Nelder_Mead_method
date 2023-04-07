@@ -7,5 +7,5 @@ class TestSimplex:
             #([], Polynomial([[1, 1]]), )
         ]
     )
-    def test_init(self):
+    def test_init(self, points, function, expected):
         pass
