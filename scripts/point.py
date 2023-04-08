@@ -13,12 +13,24 @@ class Point:
     @staticmethod
     def zero(dimension: int):
         Point.__dimension_check(dimension)
-        return Point((0,)*dimension)
+        return Point(*((0,)*dimension))
 
     @staticmethod
     def ones(dimension: int):
         Point.__dimension_check(dimension)
-        return Point((1,)*dimension)
+        return Point(*((1,)*dimension))
+
+    @staticmethod
+    def unit(dimension: int, axis: int):
+        if axis >= dimension:
+            raise AttributeError("axis must be < dimension")
+        if dimension < 0:
+            raise AttributeError("dimension must be > 0")
+        if axis < 0:
+            raise AttributeError("axis must be > 0")
+        values = [0]*dimension
+        values[axis] = 1
+        return Point(*values)
 
     @staticmethod
     def __dimension_check(dimension: int):
@@ -78,3 +90,17 @@ class Point:
     def __len__(self) -> int:
         return len(self.values)
 
+    def __str__(self):
+        if len(self) == 1:
+            return f"({self.values[0]})"
+        return str(self.values)
+
+    def __eq__(self, other):
+        if not isinstance(other, Point):
+            return False
+        if len(self) != len(other):
+            return False
+        for first, second in zip(self.values, other.values):
+            if first != second:
+                return False
+        return True

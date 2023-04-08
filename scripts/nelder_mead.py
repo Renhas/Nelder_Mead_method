@@ -5,8 +5,12 @@
 Классы:
     NelderMead - класс, реализующий метод Нелдера-Мида
 """
+import random
+from typing import Union
 import numpy as np
+from dataclasses import dataclass, field
 from scripts.functions import BaseFunction
+from scripts.point import Point
 
 
 class NelderMead:
@@ -285,44 +289,85 @@ class NelderMead:
                f"Function: {self.__function.expr}\n" \
                f"Simplex: {self.__simplex}"
 
+
+@dataclass(frozen=True)
 class Simplex:
-    def __init__(self, points: list, function: BaseFunction):
-        self.__function = function
-        self.__points = []
-        if points is None:
-            self.__create_new()
-        else:
-            self.__create_from_points(points)
-        self.sort()
+    points: tuple = field(init=False)
+    function: BaseFunction = field(init=True)
 
-    def __create_from_points(self, points):
-        for point in points:
-            func_value = self.__function.calculate(point)
-            new_point = np.array(point)
-            self.__points.append((new_point, func_value))
+    def __init__(self, function: BaseFunction, *args):
+        if not isinstance(function, BaseFunction):
+            raise AttributeError("function must be a BaseFunction")
+        object.__setattr__(self, "function", function)
+        points = self.__create_points(args)
+        object.__setattr__(self, "points", points)
 
-    def __create_new(self):
-        self.__points = [np.array([0] * self.__function.dimension)]
-        for point in range(self.__function.dimension):
-            prev_point = self.__points[point]
-            new_point = prev_point
-            while np.equal(prev_point, new_point).all():
-                new_point = np.random.randint(low=(min(prev_point) - 1),
-                                              high=(max(prev_point) + 1),
-                                              size=self.__function.dimension)
-            self.__points.append(new_point)
+    def __create_points(self, *args):
+        points = self.__make_from_args(args)
+        points = self.__make_new(points)
+        return self.__sort(points)
 
-    def sort(self):
-        self.__points.sort(key=lambda x: x[1])
+    def __make_new(self, points: list):
+        size = self.function.dimension
+        temp = points.copy()
+        if len(temp) == 0:
+            temp = [Point.zero(size)]
+        points_count = self.function.dimension + 1
+        while len(temp) < points_count:
+            axis = random.randint(0, size-1)
+            new_point = temp[-1] + Point.unit(size, axis)
+            value = self.function.calculate(new_point)
+            temp.append((new_point, value))
+        return temp
+
+    def __make_from_args(self, *args):
+        points = list()
+        for point in args:
+            if self.__check_point(point):
+                points.append(point)
+            else:
+                value = self.function.calculate(point)
+                points.append((point, value))
+        return points
+
+    def __check_point(self, point):
+        size = self.function.dimension
+        temp = point
+        result = False
+        if isinstance(temp, tuple):
+            result = True
+            temp = point[0]
+        if not isinstance(temp, Point):
+            raise AttributeError(f"{temp} is not a Point")
+        if size != len(temp):
+            raise AttributeError(f"{temp} len must be {size}")
+        return result
+
+    @staticmethod
+    def __sort(points_with_func):
+        new_points = points_with_func.copy()
+        new_points.sort(key=lambda x: x[1])
+        return tuple(new_points)
 
     @property
     def best(self):
-        return self.__points[0]
+        return self.points[0]
 
     @property
     def good(self):
-        return self.__points[-2]
+        return self.points[-2]
 
     @property
     def worst(self):
-        return self.__points[-1]
+        return self.points[-1]
+
+    def replace_point(self, index: int, new_point: Union[tuple | Point]):
+        func = self.function
+        points = list(self.points)
+        if index < 0 or index >= len(points):
+            raise IndexError(f"index must be in [0,{len(points)}]")
+        if self.__check_point(new_point):
+            points[index] = new_point
+        else:
+            points[index] = (new_point, func.calculate(new_point))
+        return Simplex(func, *points)
