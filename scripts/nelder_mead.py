@@ -44,7 +44,7 @@ class Simplex:
         return temp
 
     def __make_from_args(self, *args):
-        points = list()
+        points = []
         for point in args:
             if self.__check_point(point):
                 points.append(point)
