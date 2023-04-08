@@ -58,28 +58,32 @@ class Point:
         self.__check_len(other)
         new_val = zip(self.values, other.values)
         new_val = [x_val + y_val for x_val, y_val in new_val]
-        return Point(tuple(new_val))
+        return Point(*new_val)
 
     def __radd__(self, other):
         return self.__add__(other)
 
     def __mul__(self, other):
         if isinstance(other, Point):
-            self.__mul_point(other)
+            return self.__mul_point(other)
         if isinstance(other, numbers.Number):
-            self.__mul_number(other)
+            return self.__mul_number(other)
         raise TypeError("Other must be a Point or a Number")
 
     def __rmul__(self, other):
         return self.__mul__(other)
 
-    def __mul_point(self, other):
+    def __mul_point(self, other: "Point"):
         self.__check_len(other)
         pairs = zip(self.values, other.values)
         return sum([x_val * y_val for x_val, y_val in pairs])
 
-    def __mul_number(self, number):
-        return Point(tuple(value*number for value in self.values))
+    def __mul_number(self, number: numbers.Number):
+        return Point(*[value*number for value in self.values])
+
+    def __truediv__(self, other):
+        if isinstance(other, numbers.Number):
+            return self.__mul_number(1/other)
 
     def __sub__(self, other):
         return self + other * -1
@@ -104,3 +108,9 @@ class Point:
             if first != second:
                 return False
         return True
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+
+

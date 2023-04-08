@@ -6,7 +6,8 @@
 """
 import pytest
 import sympy as sm
-from scripts.nelder_mead import NelderMead
+from scripts.nelder_mead import NelderMead, Simplex
+from scripts.point import Point
 from scripts.functions import Rosenbroke, BaseFunction
 from scripts.functions import Himmelblau
 
@@ -52,36 +53,36 @@ class TestNelderMead:
             assert method.params[key] == value
 
     @pytest.mark.parametrize(
-        ("params", "function", "simplex", "expected"), [
-            ({}, Rosenbroke(), [[10, 9], [10, -2], [21, 1]],
-             [[10, 9], [10, -2], [21, 1]])
+        ("params", "function", "simplex"), [
+            ({}, Rosenbroke(), [Point(10, 9), Point(10, -2), Point(21, 1)])
+
 
         ]
     )
-    def test_fit(self, params: dict, function: BaseFunction, simplex: list,
-                 expected: list):
+    def test_fit(self, params: dict, function: BaseFunction, simplex: list):
         """Тестирование функции инициализации оптимизируемой функции
          и начального симплекса
 
         :param params: словарь параметров
         :param function: оптимизируемая функция
         :param simplex: начальный симплекс
-        :param expected: ожидаемый симплекс
         """
         method = NelderMead(**params)
-        method.fit(function, simplex)
+        sim = Simplex(function, *simplex)
+        method.fit(function, *simplex)
         assert method.function == function
-        assert method.simplex == expected
+        assert method.simplex == sim
 
     @pytest.mark.parametrize(
         ("params", "function", "simplex", "expected"), [
             ({"max_steps": 10},
              BaseFunction(expr=x_var**2 + x_var*y_var + y_var**2
                                - 6*x_var - 9*y_var, var=(x_var, y_var)),
-             [[0, 0], [1, 0], [0, 1]], (-20.99, 0.01)),
-            ({"eps0": 0.0001}, Rosenbroke(), [[10, 9], [10, -2], [21, 1]],
-             (0, 0.0005)),
-            ({}, Himmelblau(), [[-1.5, 0.5], [-4, 2.5], [-4.5, 5]], (0, 0.01))
+             [Point(0, 0), Point(1, 0), Point(0, 1)], (-20.99, 0.01)),
+            ({"eps0": 0.0001}, Rosenbroke(),
+             [Point(10, 9), Point(10, -2), Point(21, 1)], (0, 0.0005)),
+            ({}, Himmelblau(),
+             [Point(-1.5, 0.5), Point(-4, 2.5), Point(-4.5, 5)], (0, 0.01))
 
 
         ]
@@ -96,7 +97,7 @@ class TestNelderMead:
         :param expected: кортеж из ожидаемого значения и точности сравнения
         """
         method = NelderMead(**params)
-        method.fit(function, simplex)
+        method.fit(function, *simplex)
         result = method.run()
         assert result == pytest.approx(expected[0], abs=expected[1])
 
@@ -105,11 +106,12 @@ class TestNelderMead:
             ({"max_steps": 10},
              BaseFunction(expr=x_var ** 2 + x_var * y_var + y_var ** 2
                                - 6 * x_var - 9 * y_var, var=(x_var, y_var)),
-             [[0, 0], [1, 0], [0, 1]], ([1, 4], 1)),
-            ({"eps0": 0.0001}, Rosenbroke(), [[10, 9], [10, -2], [21, 1]],
-             ([1, 1], 1)),
-            ({}, Himmelblau(), [[-1.5, 0.5], [-4, 2.5], [-4.5, 5]],
-             ([-2.805, 3.131], 0.001))
+             [Point(0, 0), Point(1, 0), Point(0, 1)], (Point(1, 4), 1)),
+            ({"eps0": 0.0001}, Rosenbroke(), [Point(10, 9), Point(10, -2), Point(21, 1)],
+             (Point(1, 1), 1)),
+            ({}, Himmelblau(),
+             [Point(-1.5, 0.5), Point(-4, 2.5), Point(-4.5, 5)],
+             (Point(-2.805, 3.131), 0.001))
 
         ]
     )
@@ -120,10 +122,10 @@ class TestNelderMead:
         :param params: словарь параметров
         :param function: оптимизируемая функция
         :param simplex: начальный симплекс
-        :param expected: кортеж из ожидаемого симплекса и точности сравнения
+        :param expected: кортеж из ожидаемой точки и точности сравнения
         """
         method = NelderMead(**params)
-        method.fit(function, simplex)
+        method.fit(function, *simplex)
         method.run()
-        result = method.simplex[0]
-        assert result == pytest.approx(expected[0], abs=expected[1])
+        result = method.simplex.best[0].values
+        assert result == pytest.approx(expected[0].values, abs=expected[1])
