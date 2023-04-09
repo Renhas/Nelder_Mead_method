@@ -42,6 +42,8 @@ class Point:
 
         :param args: произвольное количество значений
         """
+        if len(args) == 0:
+            raise AttributeError("No items given")
         object.__setattr__(self, 'values', args)
 
     @staticmethod
@@ -72,7 +74,7 @@ class Point:
         :param axis: единичная координата
         :return: Единичный орт указанной размерности для указанной оси
         """
-        if 0 < axis <= dimension:
+        if not (0 <= axis < dimension):
             raise AttributeError(f"axis must be in [0, {dimension})")
         if dimension < 0:
             raise AttributeError("dimension must be > 0")

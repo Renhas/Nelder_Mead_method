@@ -129,3 +129,7 @@ class TestNelderMead:
         method.run()
         result = method.simplex.best[0].values
         assert result == pytest.approx(expected[0].values, abs=expected[1])
+
+class TestSimplex:
+    pass
+

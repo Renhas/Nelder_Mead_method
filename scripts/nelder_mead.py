@@ -7,8 +7,8 @@
 """
 import random
 from typing import Union
-import numpy as np
 from dataclasses import dataclass, field
+import numpy as np
 from scripts.functions import BaseFunction
 from scripts.point import Point
 
