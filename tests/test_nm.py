@@ -195,6 +195,7 @@ class TestSimplex:
         assert sim.good == three_points[-2]
         assert sim.worst == three_points[-1]
 
+    # pylint: disable=too-many-instance-attributes
     @pytest.mark.parametrize(
         ("function", "points", "index", "new_point", "expected"), [
             (Rosenbroke(), [(Point(0, 0), 1), (Point(1, 1), 0), (Point(0, 1), 101)],
