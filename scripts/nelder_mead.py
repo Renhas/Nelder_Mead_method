@@ -4,6 +4,7 @@
 
 Классы:
     NelderMead - класс, реализующий метод Нелдера-Мида
+    Simplex - класс, реализующий функционал работы с симплексом
 """
 import random
 from typing import Union
@@ -15,35 +16,74 @@ from scripts.point import Point
 
 @dataclass(frozen=True)
 class Simplex:
+    """Класс симплекса метода Нелдера-Мида
+
+    Поля:
+        points(tuple) - кортеж из пар (Точка, Значение)
+        function(BaseFunction) - функция для вычисления значения в точках
+    Свойства:
+        best - лучшая точка симплекса
+        good - предпоследняя точка симплекса
+        worst - худшая точка симплекса
+    Методы:
+        replace(int, Point | tuple)
+    """
     points: tuple = field(init=False)
     function: BaseFunction = field(init=True)
 
     def __init__(self, function: BaseFunction, *args):
+        """Конструктор класса
+
+        :param function: функция для вычисления значения в точках
+        :param args: произвольное количество начальных точек
+        """
         if not isinstance(function, BaseFunction):
             raise AttributeError("function must be a BaseFunction")
         object.__setattr__(self, "function", function)
         points = self.__create_points(*args)
         object.__setattr__(self, "points", points)
 
-    def __create_points(self, *args):
+    def __create_points(self, *args) -> tuple:
+        """Создание точек для симплекса
+
+        :param args: произвольное количество точек или пар
+        :return: готовый кортеж из пар (Точка, Значение)
+        """
         points = self.__make_from_args(*args)
         points = self.__make_new(points)
         return self.__sort(points)
 
-    def __make_new(self, points: list):
+    def __make_new(self, points: list) -> list:
+        """Создание новых точек.
+         Каждая последующая точка получатся из предыдущей путём сдвига на 1
+         в случайном направлении из возможных для данной размерности.
+         Если переданный список пуст, то генерация начинается с нулевой точки
+
+        :param points: список уже готовых пар
+        :return: полностью готовый список пар
+        """
         size = self.function.dimension
         temp = points.copy()
         if len(temp) == 0:
-            temp = [Point.zero(size)]
+            zero = Point.zero(size)
+            value = self.function.calculate(zero)
+            temp = [(zero, value)]
         points_count = self.function.dimension + 1
         while len(temp) < points_count:
             axis = random.randint(0, size-1)
-            new_point = temp[-1] + Point.unit(size, axis)
+            new_point = temp[-1][0] + Point.unit(size, axis)
             value = self.function.calculate(new_point)
             temp.append((new_point, value))
         return temp
 
-    def __make_from_args(self, *args):
+    def __make_from_args(self, *args) -> list:
+        """Создание первичных точек из переданных.
+         Переданы могут быть как сами точки, так и готовая пара.
+         Пары не изменяются, для одиночных точек вычисляется значение
+
+        :param args: произвольное количество точек
+        :return: список пар
+        """
         points = []
         for point in args:
             if self.__check_point(point):
@@ -53,7 +93,13 @@ class Simplex:
                 points.append((point, value))
         return points
 
-    def __check_point(self, point):
+    def __check_point(self, point) -> bool:
+        """Проверка точки. Если передана пара, то проверяется точка из пары
+
+        :param point: точка или пара (Точка, Значение)
+        :return: True, если передана пара. False, иначе
+        :exception AttributeError:
+        """
         size = self.function.dimension
         temp = point
         result = False
@@ -67,25 +113,49 @@ class Simplex:
         return result
 
     @staticmethod
-    def __sort(points_with_func):
+    def __sort(points_with_func: list) -> tuple:
+        """Сортирует список пар исходя из значений функции
+
+        :param points_with_func: список пар
+        :return: отсортированный кортеж пар
+        """
         new_points = points_with_func.copy()
         new_points.sort(key=lambda x: x[1])
         return tuple(new_points)
 
     @property
-    def best(self):
+    def best(self) -> tuple:
+        """Лучшая точка симплекса
+
+        :return: tuple
+        """
         return self.points[0]
 
     @property
-    def good(self):
+    def good(self) -> tuple:
+        """Предпоследняя точка симплекса
+
+        :return: tuple
+        """
         return self.points[-2]
 
     @property
-    def worst(self):
+    def worst(self) -> tuple:
+        """Худшая точка симплекса
+
+        :return: tuple
+        """
         return self.points[-1]
 
     def replace(self, index: int,
                 new_point: Union[tuple | Point]) -> "Simplex":
+        """Замещает одну точку на другую.
+         Если передаётся просто точка, для неё вычисляется значение
+
+        :param index: индекс заменяемой точки
+        :param new_point: новая точка или пара
+        :return: новый Симплекс с заменённой точкой
+        """
         func = self.function
         points = list(self.points)
         if index < -len(points) or index >= len(points):

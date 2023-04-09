@@ -3,6 +3,7 @@
 
 Классы:
     TestNelderMead - класс для тестирования метода
+    TestSimplex - класс для тестирования Simplex
 """
 import pytest
 import sympy as sm
@@ -130,6 +131,87 @@ class TestNelderMead:
         result = method.simplex.best[0].values
         assert result == pytest.approx(expected[0].values, abs=expected[1])
 
-class TestSimplex:
-    pass
 
+class TestSimplex:
+    """Класс для тестирования функционала Simplex
+
+    Метода:
+        test_create(BaseFunction, list, tuple)
+
+        test_create_from_one()
+
+        test_three_points(BaseFunction, list, tuple)
+
+        test_replace(BaseFunction, list, int, Point, tuple)
+    """
+    @pytest.mark.parametrize(
+        ("function", "points", "expected"), [
+            (Rosenbroke(), [Point(0, 0), Point(1, 1), Point(0, 1)],
+             ((Point(1, 1), 0), (Point(0, 0), 1), (Point(0, 1), 101))),
+            pytest.param(Rosenbroke(), [Point(0, 0), Point(1, 1), Point(0, 1)],
+                         ((Point(0, 0), 1), (Point(1, 1), 0),
+                         (Point(0, 1), 101)),
+                         marks=pytest.mark.xfail(strict=True)),
+            (Rosenbroke(),
+             [(Point(0, 0), 1), (Point(1, 1), 0), (Point(0, 1), 101)],
+             ((Point(1, 1), 0), (Point(0, 0), 1), (Point(0, 1), 101))),
+        ]
+    )
+    def test_create(self, function: BaseFunction, points: list,
+                    expected: tuple):
+        """Тестирование создания симплекса
+
+        :param function: символьная функция
+        :param points: список точек
+        :param expected: ожидаемый кортеж точек вместе со значением функции
+        """
+        sim = Simplex(function, *points)
+        assert sim.function == function
+        assert sim.points == expected
+
+    def test_create_from_one(self):
+        """Тестирование создания симплекса из одной точки"""
+        function = BaseFunction(x_var * 2, (x_var, ))
+        point = Point(0)
+        sim = Simplex(function, point)
+        assert sim.points == ((Point(0), 0), (Point(1), 2))
+
+    @pytest.mark.parametrize(
+        ("function", "points", "three_points"), [
+            (Rosenbroke(), [(Point(0, 0), 1), (Point(1, 1), 0), (Point(0, 1), 101)],
+             ((Point(1, 1), 0), (Point(0, 0), 1), (Point(0, 1), 101)))
+        ]
+    )
+    def test_three_points(self, function: BaseFunction, points: list,
+                          three_points: tuple):
+        """Тестирование точек best, good, worst
+
+        :param function: символьная функция
+        :param points: список точек
+        :param three_points: кортеж с best, good, worst
+        """
+        sim = Simplex(function, *points)
+        assert sim.best == three_points[0]
+        assert sim.good == three_points[-2]
+        assert sim.worst == three_points[-1]
+
+    @pytest.mark.parametrize(
+        ("function", "points", "index", "new_point", "expected"), [
+            (Rosenbroke(), [(Point(0, 0), 1), (Point(1, 1), 0), (Point(0, 1), 101)],
+             2, Point(0.5, 0.5**2),
+             ((Point(1, 1), 0), (Point(0.5, 0.5**2), 0.25), (Point(0, 0), 1)))
+        ]
+    )
+    def test_replace(self, function: BaseFunction, points: list,
+                     index: int, new_point: Point, expected: tuple):
+        """Тестирование замещения точки
+
+        :param function: символьная функция
+        :param points: список точек
+        :param index: индекс заменяемой точки
+        :param new_point: новая точка
+        :param expected: ожидаемый кортеж точек вместе со значением функции
+        """
+        sim = Simplex(function, *points)
+        sim = sim.replace(index, new_point)
+        assert sim.points == expected
