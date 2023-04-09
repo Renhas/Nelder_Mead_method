@@ -195,7 +195,6 @@ class TestSimplex:
         assert sim.good == three_points[-2]
         assert sim.worst == three_points[-1]
 
-    # pylint: disable=too-many-instance-attributes
     @pytest.mark.parametrize(
         ("function", "points", "index", "new_point", "expected"), [
             (Rosenbroke(), [(Point(0, 0), 1), (Point(1, 1), 0), (Point(0, 1), 101)],
@@ -203,6 +202,7 @@ class TestSimplex:
              ((Point(1, 1), 0), (Point(0.5, 0.5**2), 0.25), (Point(0, 0), 1)))
         ]
     )
+    # pylint: disable=too-many-instance-attributes
     def test_replace(self, function: BaseFunction, points: list,
                      index: int, new_point: Point, expected: tuple):
         """Тестирование замещения точки
