@@ -166,6 +166,7 @@ class TestSimplex:
         :param expected: ожидаемый кортеж точек вместе со значением функции
         """
         sim = Simplex(function, *points)
+        sim = sim.sort()
         assert sim.function == function
         assert sim.points == expected
 
@@ -174,6 +175,7 @@ class TestSimplex:
         function = BaseFunction(x_var * 2, (x_var, ))
         point = Point(0)
         sim = Simplex(function, point)
+        sim = sim.sort()
         assert sim.points == ((Point(0), 0), (Point(1), 2))
 
     @pytest.mark.parametrize(
@@ -191,6 +193,7 @@ class TestSimplex:
         :param three_points: кортеж с best, good, worst
         """
         sim = Simplex(function, *points)
+        sim = sim.sort()
         assert sim.best == three_points[0]
         assert sim.good == three_points[-2]
         assert sim.worst == three_points[-1]
@@ -215,4 +218,5 @@ class TestSimplex:
         """
         sim = Simplex(function, *points)
         sim = sim.replace(index, new_point)
+        sim = sim.sort()
         assert sim.points == expected

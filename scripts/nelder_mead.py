@@ -26,6 +26,7 @@ class Simplex:
         good - предпоследняя точка симплекса
         worst - худшая точка симплекса
     Методы:
+        sort()
         replace(int, Point | tuple)
     """
     points: tuple = field(init=False)
@@ -51,7 +52,7 @@ class Simplex:
         """
         points = self.__make_from_args(*args)
         points = self.__make_new(points)
-        return self.__sort(points)
+        return tuple(points)
 
     def __make_new(self, points: list) -> list:
         """Создание новых точек.
@@ -112,16 +113,14 @@ class Simplex:
             raise AttributeError(f"{temp} len must be {size}")
         return result
 
-    @staticmethod
-    def __sort(points_with_func: list) -> tuple:
+    def sort(self) -> "Simplex":
         """Сортирует список пар исходя из значений функции
 
-        :param points_with_func: список пар
-        :return: отсортированный кортеж пар
+        :return: новый, отсортированный симплекс
         """
-        new_points = points_with_func.copy()
+        new_points = list(self.points)
         new_points.sort(key=lambda x: x[1])
-        return tuple(new_points)
+        return Simplex(self.function, *new_points)
 
     @property
     def best(self) -> tuple:
@@ -265,6 +264,7 @@ class NelderMead:
             raise AttributeError("No function in class, use fit method")
         iteration = 0
         self.__current_blank = 0
+        self.__simplex = self.__simplex.sort()
         size = self.__function.dimension
         while iteration <= self.__max_steps:
             sim = self.__simplex
@@ -288,6 +288,7 @@ class NelderMead:
                     self.__simplex = sim.replace(-1, reflected)
                 # Сжатие
                 self.__contraction(centroid)
+            self.__simplex = self.__simplex.sort()
             # Опциональное действие
             if callable(action):
                 action(self)
@@ -295,6 +296,7 @@ class NelderMead:
             if self.__stop():
                 break
             iteration += 1
+            self.__last_value = self.__simplex.best[1]
         return self.__simplex.best[1]
 
     def __reflection(self, centroid) -> tuple:
