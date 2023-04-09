@@ -243,12 +243,24 @@ class NelderMead:
         return self.__simplex
 
     def fit(self, function: BaseFunction, *args) -> None:
+        """Инициализация оптимизируемой функции и начального симплекса.
+
+        :param function: оптимизируемая функция как экземпляр BaseFunction
+        :param args: произвольное количество точек начального симплекса
+        """
         if not isinstance(function, BaseFunction):
             raise AttributeError("function not an instance of BaseFunction")
         self.__function = function
         self.__simplex = Simplex(function, *args)
 
     def run(self, *, action=None) -> float:
+        """Запуск метода
+
+        :param action: опциональное действие в конце каждой итерации.
+            Должен быть callable-объект, принимающий экземпляр данного класса
+        :return: найденный минимум
+        :exception: AttributeError
+        """
         if not isinstance(self.__function, BaseFunction):
             raise AttributeError("No function in class, use fit method")
         iteration = 0

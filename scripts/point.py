@@ -74,7 +74,7 @@ class Point:
         :param axis: единичная координата
         :return: Единичный орт указанной размерности для указанной оси
         """
-        if not (0 <= axis < dimension):
+        if not 0 <= axis < dimension:
             raise AttributeError(f"axis must be in [0, {dimension})")
         if dimension < 0:
             raise AttributeError("dimension must be > 0")
@@ -260,6 +260,6 @@ class Point:
             raise AttributeError("power must be >= 0")
         if modulo is not None and not isinstance(modulo, int):
             raise AttributeError("modulo must be an integer")
-        for step in range(power):
+        for _ in range(power):
             result *= self
         return result if modulo is None else result % modulo
