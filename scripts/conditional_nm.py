@@ -40,18 +40,19 @@ class ConditionalNelderMead:
         self.__start_weight = start_weight
         self.__max_steps = max_steps
         self.__check_init_args()
-        self.__nm: NelderMead = None
+        self.__nm_method: NelderMead = None
         self.__func: BaseFunction = None
         self.__constraints = None
 
-    def fit(self, nm: NelderMead, func: BaseFunction, *args):
+    def fit(self, nm_method: NelderMead, func: BaseFunction, *args):
         """Инициализация метода Нелдера-Мида, целевой функции и ограничений
 
-        :param nm: метод Нелдера-Мида, использующийся для решения задачи безусловной оптимизации
+        :param nm_method: метод Нелдера-Мида,
+            использующийся для решения задачи безусловной оптимизации
         :param func: целевая функция
         :param args: кортеж ограничений
         """
-        self.__nm = nm
+        self.__nm_method = nm_method
         self.__func = func
         self.__constraints = args
         self.__check_fit_args()
@@ -65,7 +66,7 @@ class ConditionalNelderMead:
         :param action: опциональное действие для конца каждой итерации
         :return: решение и значение функции
         """
-        if self.__nm is None:
+        if self.__nm_method is None:
             raise AttributeError("There is no NelderMead, use fit method!")
         error_weight = self.__start_weight
         solution = start_point
@@ -76,9 +77,9 @@ class ConditionalNelderMead:
             error_func = [constr.error_func for constr in self.__constraints]
             error_func = error_weight * sum(error_func)
             new_func = self.__func + error_func
-            self.__nm.fit(new_func, solution)
-            self.__nm.run(action=nm_action)
-            solution = self.__nm.simplex.best[0]
+            self.__nm_method.fit(new_func, solution)
+            self.__nm_method.run(action=nm_action)
+            solution = self.__nm_method.simplex.best[0]
             if action is not None:
                 action(self)
             error = error_func.calculate(solution)
@@ -107,12 +108,12 @@ class ConditionalNelderMead:
                 "start_weight": self.__start_weight}
 
     @property
-    def nm(self):
+    def nm_method(self):
         """Метод Нелдера-Мида
 
         :return: копия экземпляра метода
         """
-        return NelderMead(**self.__nm.params)
+        return NelderMead(**self.__nm_method.params)
 
     @property
     def function(self):
@@ -133,7 +134,7 @@ class ConditionalNelderMead:
 
     def __check_fit_args(self):
         """Проверка параметров метода fit"""
-        if not isinstance(self.__nm, NelderMead):
+        if not isinstance(self.__nm_method, NelderMead):
             raise AttributeError("nm_method must be a NelderMead")
         if not isinstance(self.__func, BaseFunction):
             raise AttributeError("func must be a BaseFunction")

@@ -138,7 +138,7 @@ class TestConditional:
         """
         method = ConditionalNelderMead(**params)
         method.fit(nm_method, func, *constraints)
-        assert method.nm.params == nm_method.params
+        assert method.nm_method.params == nm_method.params
         assert method.function == func
         assert method.constraints == constraints
 
