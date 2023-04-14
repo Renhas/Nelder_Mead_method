@@ -130,6 +130,33 @@ class BaseFunction:
         """
         return self.__add__(other)
 
+    def __mul__(self, other):
+        """Умножение функции на число или функцию
+
+        :param other: число или функция
+        :return: новая функция
+        """
+        new_expr = self.__expression
+        new_var = list(self.__variables)
+        if isinstance(other, numbers.Number):
+            new_expr *= other
+        elif isinstance(other, BaseFunction):
+            new_expr *= other.expr
+            for var in other.variables:
+                if var not in new_var:
+                    new_var.append(var)
+        else:
+            raise AttributeError(f"can't add {type(other)} to {type(self)}")
+        return BaseFunction(new_expr, tuple(new_var))
+
+    def __rmul__(self, other):
+        """Умножение функции справа на часлио или функцию
+
+        :param other: число или функция
+        :return: новая функция
+        """
+        return self.__mul__(other)
+
     def __eq__(self, other):
         """Проверка на равенство двух функций
 

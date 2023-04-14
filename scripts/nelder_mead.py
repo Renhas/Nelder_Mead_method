@@ -70,11 +70,14 @@ class Simplex:
             value = self.function.calculate(zero)
             temp = [(zero, value)]
         points_count = self.function.dimension + 1
+        axis = 0
         while len(temp) < points_count:
-            axis = random.randint(0, size-1)
             new_point = temp[-1][0] + Point.unit(size, axis)
             value = self.function.calculate(new_point)
             temp.append((new_point, value))
+            axis += 1
+            if axis >= size:
+                axis = 0
         return temp
 
     def __make_from_args(self, *args) -> list:
