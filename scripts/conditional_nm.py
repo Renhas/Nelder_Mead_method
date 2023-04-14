@@ -19,7 +19,7 @@ class ConditionalNelderMead:
 
     Свойства:
         parameters - параметры барьерного метода
-        nm - метод Нелдера-Мида
+        nm_method - метод Нелдера-Мида
         function - целевая функция
         constraints - кортеж ограничений
     Методы:
@@ -134,7 +134,7 @@ class ConditionalNelderMead:
     def __check_fit_args(self):
         """Проверка параметров метода fit"""
         if not isinstance(self.__nm, NelderMead):
-            raise AttributeError("nm must be a NelderMead")
+            raise AttributeError("nm_method must be a NelderMead")
         if not isinstance(self.__func, BaseFunction):
             raise AttributeError("func must be a BaseFunction")
         dim = self.__func.dimension

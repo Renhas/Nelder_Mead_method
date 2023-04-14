@@ -43,7 +43,6 @@ class Constraint(ABC):
 
         :return: функция
         """
-        pass
 
     def error(self, point: Point) -> float:
         """Величина штрафа в заданной точке

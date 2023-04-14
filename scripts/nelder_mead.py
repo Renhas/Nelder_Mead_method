@@ -6,7 +6,6 @@
     NelderMead - класс, реализующий метод Нелдера-Мида
     Simplex - класс, реализующий функционал работы с симплексом
 """
-import random
 from typing import Union
 from dataclasses import dataclass, field
 import numpy as np

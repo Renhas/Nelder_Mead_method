@@ -10,7 +10,7 @@
 """
 import pytest
 import sympy as sm
-from scripts.сonditional_nm import ConditionalNelderMead
+from scripts.conditional_nm import ConditionalNelderMead
 from scripts.nelder_mead import NelderMead
 from scripts.constraints import Equality, Inequality
 from scripts.functions import BaseFunction, Polynomial
@@ -52,9 +52,10 @@ def data_second():
         ожидаемая точка и точность.
     """
     method = NelderMead()
-    vars = sm.symbols("x1:4")
-    expr = sm.Abs(vars[0]+0.5) + sm.Abs(vars[1]+1) + sm.Abs(vars[2]+2)
-    func = BaseFunction(expr, vars)
+    variables = sm.symbols("x1:4")
+    expr = sm.Abs(variables[0]+0.5) + sm.Abs(variables[1]+1)
+    expr += sm.Abs(variables[2]+2)
+    func = BaseFunction(expr, variables)
     constr_func = Polynomial([[-1, 0, 1], [0, 0, 1], [0, 0, 1]])
     constraints = (Inequality(constr_func), )
     true_value = (1.78, 0.01)
@@ -104,7 +105,7 @@ class TestConditional:
     """
     @pytest.mark.parametrize(
         "params", [
-            ({"eps": 0.0, "betta": 1.0}),
+            ({"eps": 0.0, "betta": 1.5}),
             pytest.param({"test": 1.0}, marks=pytest.mark.xfail(strict=True)),
             ({}),
             pytest.param({"eps": -0.1}, marks=pytest.mark.xfail(strict=True))
@@ -121,42 +122,42 @@ class TestConditional:
             assert actual[key] == element
 
     @pytest.mark.parametrize(
-        ("params", "nm", "func", "constraints"), [
+        ("params", "nm_method", "func", "constraints"), [
             data_first()[:4],
             data_second()[:4]
         ]
     )
-    def test_fit(self, params: dict, nm: NelderMead,
+    def test_fit(self, params: dict, nm_method: NelderMead,
                  func: BaseFunction, constraints: tuple):
         """Тестирование инициализации метода и задачи
 
         :param params: параметры алгоритма
-        :param nm: метода Неледра-Мида
+        :param nm_method: метода Неледра-Мида
         :param func: целевая функция
         :param constraints: ограничения
         """
         method = ConditionalNelderMead(**params)
-        method.fit(nm, func, *constraints)
-        assert method.nm.params == nm.params
+        method.fit(nm_method, func, *constraints)
+        assert method.nm.params == nm_method.params
         assert method.function == func
         assert method.constraints == constraints
 
     # pylint: disable=too-many-arguments
     @pytest.mark.parametrize(
-        ("params", "nm", "func", "constraints",
+        ("params", "nm_method", "func", "constraints",
          "start_point", "true_value", "true_point"), [
             data_first(),
             data_second(),
             data_third()
         ]
     )
-    def test_run(self, params: dict, nm: NelderMead, func: BaseFunction,
+    def test_run(self, params: dict, nm_method: NelderMead, func: BaseFunction,
                  constraints: tuple, start_point: Point, true_value: tuple,
                  true_point: tuple):
         """Тестирование работы алгоритма
 
-        :param params: парамептры алгоритма
-        :param nm: метод Неледра-Мида
+        :param params: параметры алгоритма
+        :param nm_method: метод Неледра-Мида
         :param func: целевая функция
         :param constraints: ограничения
         :param start_point: стартовая точка
@@ -164,7 +165,8 @@ class TestConditional:
         :param true_point: оптимальное решение
         """
         method = ConditionalNelderMead(**params)
-        method.fit(nm, func, *constraints)
+        method.fit(nm_method, func, *constraints)
         result = method.run(start_point)
-        assert result[0].values == pytest.approx(true_point[0].values, abs=true_point[1])
+        assert result[0].values == pytest.approx(true_point[0].values,
+                                                 abs=true_point[1])
         assert result[1] == pytest.approx(true_value[0], abs=true_value[1])
