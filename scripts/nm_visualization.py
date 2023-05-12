@@ -6,7 +6,7 @@
     NelderMead2DAnimation - анимация работы метода
 """
 import typing
-
+from typing import Union
 import matplotlib.figure
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -80,7 +80,7 @@ class PlotSettings:
 
     def contour_init(self, function: BaseFunction,
                      x_step: float = 0.05, y_step: float = 0.05,
-                     levels: int | list = 10):
+                     levels: Union[int, list] = 10):
         """Отрисовка линий уровня функции с двумя(!) переменными
 
         :param function: функция

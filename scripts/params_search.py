@@ -58,6 +58,7 @@ from scripts.functions import BaseFunction
 from scripts.point import Point
 from scripts.conditional_nm import ConditionalNelderMead
 
+
 # pylint: disable=too-few-public-methods
 class SearchMethodParams:
     """Поиск оптимальных параметров для произвольного оптимизационного метода.
@@ -131,6 +132,7 @@ class SearchMethodParams:
         if len(self._optimal_params) > max_count:
             self._optimal_params.pop()
 
+
 # pylint: disable=too-few-public-methods
 class SearchNelderMeadParams(SearchMethodParams):
     """Класс для поиска оптимальных параметров метода Нелдера-Мида"""
@@ -143,6 +145,7 @@ class SearchNelderMeadParams(SearchMethodParams):
             points: начальный симплекс
         """
         super().__init__(NelderMead, nm_params, [function, *points], [])
+
 
 # pylint: disable=too-few-public-methods
 class SearchConditional(SearchMethodParams):
