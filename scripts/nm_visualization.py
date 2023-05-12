@@ -53,7 +53,7 @@ class PlotSettings:
         self.__fig = plt.figure()
         self.__ax = plt.axes(xlim=x_limits, ylim=y_limits)
         self.__line,  = self.__ax.plot([], [], lw=line_width)
-        self.__text_on_plot = plt.text(0, 0, "None")
+        self.__text_on_plot = plt.text(0, 0, "")
         plt.title(title)
 
     @staticmethod
@@ -80,13 +80,13 @@ class PlotSettings:
 
     def contour_init(self, function: BaseFunction,
                      x_step: float = 0.05, y_step: float = 0.05,
-                     levels: int = 10):
+                     levels: int | list = 10):
         """Отрисовка линий уровня функции с двумя(!) переменными
 
         :param function: функция
         :param x_step: шаг, с которым генерируются точки по x
         :param y_step: шаг, с которым генерируются точки по y
-        :param levels: количество уровней
+        :param levels: количество уровней или список уровней
         """
         x_limits, y_limits = self.__x_limits, self.__y_limits
         x_data = np.arange(x_limits[0], x_limits[1], x_step)
