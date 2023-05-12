@@ -1,0 +1,2 @@
+sphinx.ext.graphviz>=2.4
+sphinx.ext.imgmath>=5.2
