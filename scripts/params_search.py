@@ -6,7 +6,8 @@
     SearchNelderMeadParams - работа с методом Нелдера-Мида
     SearchConditional - работа с условным методом Нелдера-Мида
 
-Пример:
+Примеры:
+    1.
     import numpy as np
     from scripts.functions import Rosenbroke
     from scripts.point import Point
@@ -26,6 +27,30 @@
         print(f"\tValue: {value}")
         print(f"\tParams: {params}")
         number += 1
+    2.
+    from tests.test_conditional_nm import data_first
+    _, _, function, constraints, start_point, *_ = data_first()
+    searcher = SearchConditional(
+        {
+            "betta": np.linspace(1.5, 2.5, 3),
+            "start_weight": np.linspace(1, 3, 3)
+        },
+        {
+            "alpha": np.linspace(0.5, 1.5, 3),
+            "betta": np.linspace(0, 1, 3),
+            "gamma": np.linspace(1.5, 2.5, 3)
+        },
+        function, constraints, start_point
+    )
+    res = searcher.run(max_optimal_count=20)
+    print("TOP-10:")
+    number = 1
+    for value, nm_params, cond_params in res:
+        print(f"\t#{number}:")
+        print(f"\tValue: {value}")
+        print(f"\tNM Params: {nm_params}")
+        print(f"\tCNM Params: {cond_params}")
+        number += 1
 """
 from itertools import product
 from scripts.nelder_mead import NelderMead
@@ -33,7 +58,7 @@ from scripts.functions import BaseFunction
 from scripts.point import Point
 from scripts.conditional_nm import ConditionalNelderMead
 
-
+# pylint: disable=too-few-public-methods
 class SearchMethodParams:
     """Поиск оптимальных параметров для произвольного оптимизационного метода.
     Класс, реализующий метод, должен иметь методы fit и run.
@@ -106,7 +131,7 @@ class SearchMethodParams:
         if len(self._optimal_params) > max_count:
             self._optimal_params.pop()
 
-
+# pylint: disable=too-few-public-methods
 class SearchNelderMeadParams(SearchMethodParams):
     """Класс для поиска оптимальных параметров метода Нелдера-Мида"""
     def __init__(self, nm_params: dict, function: BaseFunction, points: list):
@@ -119,9 +144,11 @@ class SearchNelderMeadParams(SearchMethodParams):
         """
         super().__init__(NelderMead, nm_params, [function, *points], [])
 
-
+# pylint: disable=too-few-public-methods
 class SearchConditional(SearchMethodParams):
     """Поиск оптимальных параметров условного метода Нелдера-Мида"""
+
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, conditional_params: dict, nm_params: dict,
                  function: BaseFunction, conditions: list,
                  start_point: Point):

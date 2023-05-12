@@ -1,8 +1,6 @@
 """
 Модуль, демонстрирующий работу с классом NelderMead
 """
-import numpy as np
-
 from scripts.functions import Rosenbroke
 from scripts.nelder_mead import NelderMead, Point
 from scripts.nm_visualization import PlotSettings, NelderMead2DAnimation
@@ -30,48 +28,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-'''
-from scripts.params_search import SearchNelderMeadParams, SearchConditional
-from tests.test_conditional_nm import data_first
-searcher = SearchNelderMeadParams(
-{
-    "alpha": np.linspace(0.5, 1.5, 3),
-    "betta": np.linspace(0, 1, 3),
-    "gamma": np.linspace(1.5, 2.5, 3)
-},
-    Rosenbroke(), [Point.zero(2)]
-)
-res = searcher.run(max_optimal_count=20)
-print("TOP-10:")
-number = 1
-for value, params in res:
-    print(f"\t#{number}:")
-    print(f"\tValue: {value}")
-    print(f"\tParams: {params}")
-    number += 1
-'''
-'''
-_, _, function, constraints, start_point, *_ = data_first()
-searcher = SearchConditional(
-    {
-        "betta": np.linspace(1.5, 2.5, 3),
-        "start_weight": np.linspace(1, 3, 3)
-     },
-    {
-        "alpha": np.linspace(0.5, 1.5, 3),
-        "betta": np.linspace(0, 1, 3),
-        "gamma": np.linspace(1.5, 2.5, 3)
-     },
-    function, constraints, start_point
-)
-res = searcher.run(max_optimal_count=20)
-print("TOP-10:")
-number = 1
-for value, nm_params, cond_params in res:
-    print(f"\t#{number}:")
-    print(f"\tValue: {value}")
-    print(f"\tNM Params: {nm_params}")
-    print(f"\tCNM Params: {cond_params}")
-    number += 1
-'''
