@@ -148,7 +148,7 @@ class SearchNelderMeadParams(SearchMethodParams):
 class SearchConditional(SearchMethodParams):
     """Поиск оптимальных параметров условного метода Нелдера-Мида"""
 
-    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-arguments
     def __init__(self, conditional_params: dict, nm_params: dict,
                  function: BaseFunction, conditions: list,
                  start_point: Point):
