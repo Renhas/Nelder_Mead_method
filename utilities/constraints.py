@@ -9,8 +9,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 import sympy as sm
-from scripts.utilities.functions import BaseFunction
-from scripts.utilities.point import Point
+from utilities.functions import BaseFunction
+from utilities.point import Point
 
 
 @dataclass(frozen=True)

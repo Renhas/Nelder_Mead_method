@@ -5,10 +5,10 @@
     ConditionalNelderMead - класс, применяющий Нелдера-Мида для решения задачи условной оптимизации
 """
 import typing
-from scripts.utilities.point import Point
-from scripts.nelder_mead.nelder_mead import NelderMead
-from scripts.utilities.constraints import Constraint
-from scripts.utilities.functions import BaseFunction
+from utilities.point import Point
+from nelder_mead.nelder_mead import NelderMead
+from utilities.constraints import Constraint
+from utilities.functions import BaseFunction
 
 
 class ConditionalNelderMead:

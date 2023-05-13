@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import numpy as np
 from sympy.utilities.lambdify import lambdify
-from scripts.utilities.functions import BaseFunction
-from scripts.nelder_mead.nelder_mead import NelderMead, Point
+from utilities.functions import BaseFunction
+from nelder_mead.nelder_mead import NelderMead, Point
 
 
 class PlotSettings:

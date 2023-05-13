@@ -9,8 +9,8 @@
 from typing import Union
 from dataclasses import dataclass, field
 import numpy as np
-from scripts.utilities.functions import BaseFunction
-from scripts.utilities.point import Point
+from utilities.functions import BaseFunction
+from utilities.point import Point
 
 
 @dataclass(frozen=True)

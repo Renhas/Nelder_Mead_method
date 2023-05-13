@@ -10,9 +10,9 @@
 import typing
 import pytest
 import sympy as sm
-from scripts.utilities.functions import BaseFunction, Polynomial, Rosenbroke
-from scripts.utilities.functions import Himmelblau
-from scripts.utilities.point import Point
+from utilities.functions import BaseFunction, Polynomial, Rosenbroke
+from utilities.functions import Himmelblau
+from utilities.point import Point
 
 # Символы для символьных выражений
 variables = sm.symbols("x1:10")

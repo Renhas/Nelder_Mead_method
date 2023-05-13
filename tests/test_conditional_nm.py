@@ -10,11 +10,11 @@
 """
 import pytest
 import sympy as sm
-from scripts.nelder_mead.conditional_nm import ConditionalNelderMead
-from scripts.nelder_mead.nelder_mead import NelderMead
-from scripts.utilities.constraints import Equality, Inequality
-from scripts.utilities.functions import BaseFunction, Polynomial
-from scripts.utilities.point import Point
+from nelder_mead.conditional_nm import ConditionalNelderMead
+from nelder_mead.nelder_mead import NelderMead
+from utilities import Equality, Inequality
+from utilities.functions import BaseFunction, Polynomial
+from utilities.point import Point
 
 
 def data_first():

@@ -1,10 +1,10 @@
 """
 Модуль, демонстрирующий работу с классом NelderMead
 """
-from scripts.utilities.functions import Rosenbroke
-from scripts.utilities.point import Point
-from scripts.nelder_mead import NelderMead
-from scripts.addons.nm_visualization import PlotSettings, NelderMead2DAnimation
+from utilities.functions import Rosenbroke
+from utilities.point import Point
+from nelder_mead import NelderMead
+from addons import PlotSettings, NelderMead2DAnimation
 
 
 def main():
