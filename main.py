@@ -1,9 +1,10 @@
 """
 Модуль, демонстрирующий работу с классом NelderMead
 """
-from scripts.functions import Rosenbroke
-from scripts.nelder_mead import NelderMead, Point
-from scripts.nm_visualization import PlotSettings, NelderMead2DAnimation
+from scripts.utilities.functions import Rosenbroke
+from scripts.utilities.point import Point
+from scripts.nelder_mead import NelderMead
+from scripts.addons.nm_visualization import PlotSettings, NelderMead2DAnimation
 
 
 def main():
@@ -22,7 +23,7 @@ def main():
         plot.text.set_text(f"Итерация: {index + 1}")
 
     anim.animate(action=text_setter)
-    anim.save("gifs/animation_100.gif")
+    #anim.save("gifs/animation_100.gif")
     plot.show()
 
 

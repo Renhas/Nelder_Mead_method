@@ -53,10 +53,10 @@
         number += 1
 """
 from itertools import product
-from scripts.nelder_mead import NelderMead
-from scripts.functions import BaseFunction
-from scripts.point import Point
-from scripts.conditional_nm import ConditionalNelderMead
+from scripts.nelder_mead.nelder_mead import NelderMead
+from scripts.utilities.functions import BaseFunction
+from scripts.utilities.point import Point
+from scripts.nelder_mead.conditional_nm import ConditionalNelderMead
 
 
 # pylint: disable=too-few-public-methods

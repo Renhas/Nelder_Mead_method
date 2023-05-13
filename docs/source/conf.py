@@ -1,3 +1,5 @@
+# pylint: disable-all
+# pylint: skip-file
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -5,6 +7,11 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../.."))
 
 project = 'Nelder-Mead'
 copyright = '2023, Hasan Oren'
@@ -16,7 +23,10 @@ version = '1.5'
 
 extensions = [
     'sphinx.ext.graphviz',
-    'sphinx.ext.imgmath'
+    'sphinx.ext.imgmath',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.autodoc'
 ]
 
 templates_path = ['_templates']
@@ -27,8 +37,8 @@ language = 'ru'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-#html_theme = 'alabaster'
-html_theme = 'classic'
+html_theme = 'sphinx_rtd_theme'
+#html_theme = 'classic'
 html_static_path = ['_static']
 
 # -- Options for Epub output -------------------------------------------------

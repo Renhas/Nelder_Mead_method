@@ -10,7 +10,7 @@
 import numbers
 from typing import Union
 import sympy as sm
-from scripts.point import Point
+from scripts.utilities.point import Point
 
 
 class BaseFunction:

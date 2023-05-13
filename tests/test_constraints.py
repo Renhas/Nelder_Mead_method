@@ -7,9 +7,9 @@
 """
 import pytest
 import sympy as sm
-from scripts.constraints import Equality, Inequality
-from scripts.functions import BaseFunction
-from scripts.point import Point
+from scripts.utilities.constraints import Equality, Inequality
+from scripts.utilities.functions import BaseFunction
+from scripts.utilities.point import Point
 
 x_var, y_var = sm.symbols("x,y")
 function_first = BaseFunction(x_var*y_var, (x_var, y_var))

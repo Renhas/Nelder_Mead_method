@@ -5,7 +5,7 @@
     TestPoint - тестирование класса Point
 """
 import pytest
-from scripts.point import Point
+from scripts.utilities.point import Point
 
 
 class TestPoint:
