@@ -10,11 +10,11 @@
 """
 import pytest
 import sympy as sm
-from scripts.conditional_nm import ConditionalNelderMead
-from scripts.nelder_mead import NelderMead
-from scripts.constraints import Equality, Inequality
-from scripts.functions import BaseFunction, Polynomial
-from scripts.point import Point
+from nelder_mead.conditional_nm import ConditionalNelderMead
+from nelder_mead.nelder_mead import NelderMead
+from utilities import Equality, Inequality
+from utilities.functions import BaseFunction, Polynomial
+from utilities.point import Point
 
 
 def data_first():
@@ -75,7 +75,7 @@ def data_third():
         x1 + x2 + x3 - 3 = 0
 
         Решение: X* = (1, 1, 1), Q(X*) = 3
-    :return: кортеж из: параметры алгоритма, метод Нелдера-Мида, целевая функция
+    :return: кортеж из: параметры алгоритма, метод Нелдера-Мида, целевая функция,
         кортеж ограничений, стартовая точка, ожидаемое значение и точность,
         ожидаемая точка и точность.
     """

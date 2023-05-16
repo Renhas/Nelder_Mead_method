@@ -7,10 +7,10 @@
 """
 import pytest
 import sympy as sm
-from scripts.nelder_mead import NelderMead, Simplex
-from scripts.point import Point
-from scripts.functions import Rosenbroke, BaseFunction
-from scripts.functions import Himmelblau
+from nelder_mead.nelder_mead import NelderMead, Simplex
+from utilities.point import Point
+from utilities.functions import Rosenbroke, BaseFunction
+from utilities.functions import Himmelblau
 
 # Символы для символьных выражений
 x_var, y_var = sm.symbols("x,y")
