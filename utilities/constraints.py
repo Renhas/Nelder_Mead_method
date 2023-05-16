@@ -1,10 +1,5 @@
 """
-Модуль, реализующий функционал ограничений
-
-Классы:
-    Constraint - абстрактный базовый класс всех ограничений
-    Equality - ограничение-равенство
-    Inequality - ограничение-неравенство
+Модуль, реализующий функционал математических ограничений
 """
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -15,22 +10,18 @@ from utilities.point import Point
 
 @dataclass(frozen=True)
 class Constraint(ABC):
-    """Абстрактный класс, базовый для всех ограничений, иммутабельный
-
-    Поля:
-        function - функция-ограничение
-    Свойства:
-        error_func - функция штрафа
-    Методы:
-        error(Point) - величина штрафа в точке
-        check(Point) - проверка на выполнимость
-    """
+    """Абстрактный класс, базовый для всех ограничений, иммутабельный"""
     function: BaseFunction = field(init=False)
 
     def __init__(self, function: BaseFunction):
-        """Конструктор класса
+        """Инициализатор класса
 
-        :param function: функция-ограничение
+        Args:
+            function: функция-ограничение
+
+        Raises:
+            AttributeError - если передан не экземпляр
+             :class:`~utilities.functions.BaseFunction`
         """
         if not isinstance(function, BaseFunction):
             raise AttributeError("function must be a BaseFunction")
@@ -39,49 +30,39 @@ class Constraint(ABC):
     @property
     @abstractmethod
     def error_func(self) -> BaseFunction:
-        """Функция штрафа
-
-        :return: функция
-        """
+        """Функция штрафа, построенная на основе функции-ограничения"""
 
     def error(self, point: Point) -> float:
-        """Величина штрафа в заданной точке
-
-        :param point: точка
-        :return: значение штрафа
-        """
+        """Величина штрафа в заданной точке"""
         return self.error_func.calculate(point)
 
     def check(self, point: Point) -> bool:
         """Проверка на выполнимость в заданной точке
 
-        :param point: точка
-        :return: булево значение
+        Args:
+            point: проверяемая точка
+
+        Returns:
+            True, если ошибка равна 0. False, иначе
         """
         return self.error(point) == 0
 
 
 class Equality(Constraint):
-    """Класс для ограничения-равенства вида f(x) = 0"""
+    """Ограничение-равенство вида :math:`f(x)=0`"""
     @property
     def error_func(self) -> BaseFunction:
-        """Функция штрафа |f(x)|
-
-        :return: функция
-        """
+        """Функция штрафа :math:`|f(x)|`"""
         func = self.function.expr
         new_func = abs(func)
         return BaseFunction(new_func, self.function.variables)
 
 
 class Inequality(Constraint):
-    """Класс для ограничения неравенства вида f(x) <= 0"""
+    r"""Ограничение-неравенство вида :math:`f(x)\leq0`"""
     @property
     def error_func(self) -> BaseFunction:
-        """Функция штрафа max(0, f(x))
-
-        :return: функция
-        """
+        """Функция штрафа :math:`max(0,f(x))`"""
         func = self.function.expr
         new_func = sm.Max(0, func)
         return BaseFunction(new_func, self.function.variables)

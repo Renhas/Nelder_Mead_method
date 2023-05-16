@@ -3,17 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Nelder-Mead's documentation!
-=======================================
+Добро пожаловать в документацию Nelder-Mead!
+============================================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Модули:
 
-   modules
+   nelder_mead
+   addons
+   utilities
 
-Indices and tables
-==================
+Указатели и оглавления
+=======================
 
 * :ref:`genindex`
 * :ref:`modindex`

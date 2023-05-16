@@ -1,8 +1,5 @@
 """
 Многомерные точки (вектора) и взаимодействие с ними
-
-Классы:
-    Point - клас, реализующий многомерную точку и операции с ней
 """
 import math
 import numbers
@@ -14,16 +11,6 @@ from dataclasses import dataclass, field
 class Point:
     """
     Многомерная точка (иммутабельная).
-    В конструкторе принимает произвольное количество объектов
-
-    Поля:
-        values - кортеж значений точки
-    Методы класса:
-        zero(int) - нулевая точка
-        ones(int) - единичная точка
-        unit(int) - единичный орт
-    Методы экземпляра:
-        distance(Point) - расстояние между точками
 
     Определённые операции:
         Сложение точек
@@ -38,9 +25,12 @@ class Point:
     values: tuple = field(init=False)
 
     def __init__(self, *args):
-        """Конструктор класса
+        """Инициализатор класса
 
-        :param args: произвольное количество значений
+        Args:
+            *args: произвольные объекты
+        Raises:
+            AttributeError - если не передано ни одного объекта
         """
         if len(args) == 0:
             raise AttributeError("No items given")
@@ -50,8 +40,14 @@ class Point:
     def zero(dimension: int) -> "Point":
         """Нулевая точка
 
-        :param dimension: размерность
-        :return: нулевая точка заданной размерности
+        Args:
+            dimension: размерность
+
+        Returns:
+            Точка вида (0, 0, ..., 0)
+
+        Raises:
+            AttributeError - если переданы некорректная размерность
         """
         Point.__dimension_check(dimension)
         return Point(*((0,)*dimension))
@@ -60,8 +56,14 @@ class Point:
     def ones(dimension: int) -> "Point":
         """Единичная точка
 
-        :param dimension: размерность
-        :return: единичная точка заданной размерности
+        Args:
+            dimension: размерность
+
+        Returns:
+            Точка вида (1, 1, ..., 1)
+
+        Raises:
+            AttributeError - если переданы некорректная размерность
         """
         Point.__dimension_check(dimension)
         return Point(*((1,)*dimension))
@@ -70,14 +72,19 @@ class Point:
     def unit(dimension: int, axis: int) -> "Point":
         """Единичный орт
 
-        :param dimension: размерность
-        :param axis: единичная координата
-        :return: Единичный орт указанной размерности для указанной оси
+        Args:
+            dimension: размерность
+            axis: ось (от 0 до dimension - 1)
+
+        Returns:
+            Единичный орт указанной размерности для указанной оси
+
+        Raises:
+            AttributeError - если переданы некорректная ось или размерность
         """
+        Point.__dimension_check(dimension)
         if not 0 <= axis < dimension:
             raise AttributeError(f"axis must be in [0, {dimension})")
-        if dimension < 0:
-            raise AttributeError("dimension must be > 0")
         values = [0]*dimension
         values[axis] = 1
         return Point(*values)
@@ -86,7 +93,11 @@ class Point:
     def __dimension_check(dimension: int):
         """Проверка размерности
 
-        :param dimension: размерность
+        Args:
+            dimension: размерность
+
+        Raises:
+            AttributeError - если размерность меньше 0
         """
         if not isinstance(dimension, int):
             raise AttributeError("Dimension must be a integer")
@@ -96,8 +107,11 @@ class Point:
     def distance(self, other: "Point") -> float:
         """Евклидово расстояние между точками
 
-        :param other: вторая точка
-        :return: расстояние
+        Args:
+            other: вторая точка
+
+        Returns:
+            :math:`\\sqrt{(X-Y)^2}`
         """
         Point.__check_point(other)
         self.__check_len(other)
@@ -107,7 +121,11 @@ class Point:
     def __check_point(other: "Point"):
         """Проверка точки
 
-        :param other: точка
+        Args:
+            other: точка
+
+        Raises:
+            TypeError - если other не точка
         """
         if not isinstance(other, Point):
             raise TypeError("Other must be a Point")
@@ -115,17 +133,17 @@ class Point:
     def __check_len(self, other: "Point"):
         """Проверка длины
 
-        :param other: вторая точка
+        Args:
+            other: вторая точка
+
+        Raises:
+            AttributeError - если other не является точкой
         """
         if len(other) != len(self):
             raise AttributeError(f"Other's length must be ={len(self)}")
 
     def __add__(self, other: "Point") -> "Point":
-        """Сложение точек
-
-        :param other: вторая точка
-        :return: новая точка
-        """
+        """Сложение точек"""
         Point.__check_point(other)
         self.__check_len(other)
         new_val = zip(self.values, other.values)
@@ -133,20 +151,12 @@ class Point:
         return Point(*new_val)
 
     def __radd__(self, other: "Point") -> "Point":
-        """Сложение точек справа
-
-        :param other: вторая точка
-        :return: новая точка
-        """
+        """Сложение точек справа"""
         return self.__add__(other)
 
     def __mul__(self, other: Union[numbers.Number, "Point"]) \
             -> Union["Point", numbers.Number]:
-        """Умножение точки
-
-        :param other: число или точка
-        :return: точка или число
-        """
+        """Умножение точки"""
         if isinstance(other, Point):
             return self.__mul_point(other)
         if isinstance(other, numbers.Number):
@@ -155,79 +165,45 @@ class Point:
 
     def __rmul__(self, other: Union[numbers.Number, "Point"]) \
             -> Union["Point", numbers.Number]:
-        """Умножение справа
-
-        :param other: число или точка
-        :return: точка или число
-        """
+        """Умножение точки справа"""
         return self.__mul__(other)
 
     def __mul_point(self, other: "Point") -> numbers.Number:
-        """Умножение на точку
-
-        :param other: вторая точка
-        :return: число
-        """
+        """Умножение на точку"""
         self.__check_len(other)
         pairs = zip(self.values, other.values)
         return sum(x_val * y_val for x_val, y_val in pairs)
 
     def __mul_number(self, number: numbers.Number) -> "Point":
-        """Умножение на число
-
-        :param number: число
-        :return: точка
-        """
+        """Умножение на число"""
         return Point(*[value*number for value in self.values])
 
     def __truediv__(self, other: numbers.Number) -> "Point":
-        """Целочисленное деление
-
-        :param other: число
-        :return: точка
-        """
+        """Целочисленное деление"""
         if isinstance(other, numbers.Number):
             return self.__mul_number(1/other)
         raise AttributeError(f"{other} must be a Number")
 
     def __sub__(self, other: "Point") -> "Point":
-        """Вычитание
-
-        :param other: вторая точка
-        :return: точка
-        """
+        """Вычитание"""
         return self + other * -1
 
     def __rsub__(self, other: "Point") -> "Point":
-        """Вычитание справа
-
-        :param other: вторая точка
-        :return: точка
-        """
+        """Вычитание справа"""
         return self.__sub__(other)
 
     def __len__(self) -> int:
-        """Длина точки
-
-        :return: длина
-        """
+        """Размерность точки"""
         return len(self.values)
 
     def __str__(self):
-        """Строковое представление
-
-        :return: строка вида (x,y,z)
-        """
+        """Строковое представление"""
         if len(self) == 1:
             return f"({self.values[0]})"
         return str(self.values)
 
     def __eq__(self, other: "Point") -> bool:
-        """Проверка на равенство точек
-
-        :param other: вторая точка
-        :return: булево значение
-        """
+        """Проверка на равенство точек"""
         if not isinstance(other, Point):
             return False
         if len(self) != len(other):
@@ -238,21 +214,12 @@ class Point:
         return True
 
     def __ne__(self, other: "Point") -> bool:
-        """Проверка на неравенство
-
-        :param other: вторая точка
-        :return: булево значение
-        """
+        """Проверка на неравенство точек"""
         return not self.__eq__(other)
 
     def __pow__(self, power: int, modulo: int = None) \
             -> Union["Point", numbers.Number]:
-        """Возведение в степень
-
-        :param power: целая неотрицательная степень
-        :param modulo: модуль
-        :return: число или точка
-        """
+        """Возведение в степень"""
         result = 1
         if not isinstance(power, int):
             raise AttributeError("power must be an integer")

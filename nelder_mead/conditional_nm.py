@@ -1,10 +1,7 @@
 """
-Модуль, адаптирующий Нелдера-Мида под задачу условной оптимизации
-
-Классы:
-    ConditionalNelderMead - класс, применяющий Нелдера-Мида для решения задачи условной оптимизации
+Модуль, адаптирующий метод Нелдера-Мида под задачу условной оптимизации.
 """
-import typing
+from typing import Callable, Tuple, Sequence
 from utilities.point import Point
 from nelder_mead.nelder_mead import NelderMead
 from utilities.constraints import Constraint
@@ -14,26 +11,18 @@ from utilities.functions import BaseFunction
 class ConditionalNelderMead:
     """
     Класс, адаптирующий метод Нелдера-Мида под задачу условной оптимизации.
-        Достигается это путём сведения задачи условной оптимизации к задаче безусловной оптимизации
-        по принципу барьерных (штрафных) функций
-
-    Свойства:
-        parameters - параметры барьерного метода
-        nm_method - метод Нелдера-Мида
-        function - целевая функция
-        constraints - кортеж ограничений
-    Методы:
-        fit - инициализация метода Нелдера-Мида, целевой функции и ограничений
-        run - старт алгоритма из некой стартовой точки
+     Достигается это путём сведения задачи условной оптимизации к задаче безусловной оптимизации
+     по принципу барьерных (штрафных) функций
     """
     def __init__(self, *, eps: float = 0.0001, betta: float = 1.5,
                  start_weight: float = 1.0, max_steps: int = 1000):
-        """Конструктор класса
+        """Инициализатор класса
 
-        :param eps: предельная величина ошибки (штрафа)
-        :param betta: коэффициент увеличения штрафного коэффициента
-        :param start_weight: начальный штрафной коэффициент
-        :param max_steps: максимальное количество шагов
+        Args:
+            eps: предельная величина ошибки (штрафа)
+            betta: коэффициент увеличения штрафного коэффициента
+            start_weight: начальный штрафной коэффициент
+            max_steps: максимальное количество шагов
         """
         self.__eps = eps
         self.__betta = betta
@@ -47,24 +36,32 @@ class ConditionalNelderMead:
     def fit(self, nm_method: NelderMead, func: BaseFunction, *args):
         """Инициализация метода Нелдера-Мида, целевой функции и ограничений
 
-        :param nm_method: метод Нелдера-Мида,
-            использующийся для решения задачи безусловной оптимизации
-        :param func: целевая функция
-        :param args: кортеж ограничений
+        Args:
+            nm_method: метод Нелдера-Мида, использующийся для решения
+             задачи безусловной оптимизации
+            func: целевая функция
+            *args: кортеж ограничений :class:`~utilities.constraints.Constraint`
         """
         self.__nm_method = nm_method
         self.__func = func
         self.__constraints = args
         self.__check_fit_args()
 
-    def run(self, start_point: Point, nm_action: typing.Callable = None,
-            action: typing.Callable = None):
+    def run(self, start_point: Point, nm_action: Callable = None,
+            action: Callable = None) -> Tuple[Point, float]:
         """Запуск алгоритма из начальной точки
 
-        :param start_point: начальная точка алгоритма
-        :param nm_action: опциональное действие для метода Нелдера-Мида
-        :param action: опциональное действие для конца каждой итерации
-        :return: решение и значение функции
+        Args:
+            start_point: начальная точка алгоритма
+            nm_action: опциональное действие для метода Нелдера-Мида
+            action:опциональное действие для конца каждой итерации
+
+        Returns:
+            Найденное решение вместе со значением функции
+
+        Raises:
+            AttributeError - когда нет экземпляра
+             :class:`~nelder_mead.nelder_mead.NelderMead`
         """
         if self.__nm_method is None:
             raise AttributeError("There is no NelderMead, use fit method!")
@@ -88,52 +85,50 @@ class ConditionalNelderMead:
                 break
         return solution, self.__func.calculate(solution)
 
-    def __stop(self, error) -> bool:
-        """Условия останова
+    def __stop(self, error: float) -> bool:
+        """Условие останова
 
-        :param error: штраф
         :return: булево значение
+
+        Args:
+            error: текущее значение штрафа
+
+        Returns:
+            True, если условие выполнено и нужно остановить алгоритм.
+            False, иначе
         """
         return error < self.__eps
 
     @property
     def parameters(self) -> dict:
-        """Параметры алгоритма
-
-        :return: словарь с параметрами
-        """
+        """Параметры алгоритма"""
         return {"eps": self.__eps,
                 "betta": self.__betta,
-                "max_steps": self.__max_steps,
-                "start_weight": self.__start_weight}
+                "start_weight": self.__start_weight,
+                "max_steps": self.__max_steps}
 
     @property
-    def nm_method(self):
-        """Метод Нелдера-Мида
-
-        :return: копия экземпляра метода
-        """
+    def nm_method(self) -> NelderMead:
+        """Метод Нелдера-Мида"""
         return NelderMead(**self.__nm_method.params)
 
     @property
-    def function(self):
-        """Целевая функция
-
-        :return: копия целевой функции
-        """
+    def function(self) -> BaseFunction:
+        """Целевая функция"""
         func = self.__func
         return BaseFunction(func.expr, func.variables)
 
     @property
-    def constraints(self):
-        """Ограничения
-
-        :return: кортеж ограничений
-        """
+    def constraints(self) -> Sequence[Constraint]:
+        """Ограничения"""
         return self.__constraints
 
     def __check_fit_args(self):
-        """Проверка параметров метода fit"""
+        """Проверка параметров метода fit
+
+        Raises:
+            AttributeError - если один из параметров не проходит по ограничениям
+        """
         if not isinstance(self.__nm_method, NelderMead):
             raise AttributeError("nm_method must be a NelderMead")
         if not isinstance(self.__func, BaseFunction):
@@ -146,7 +141,11 @@ class ConditionalNelderMead:
                 raise AttributeError(f"{element} dimension must be {dim}")
 
     def __check_init_args(self):
-        """Проверка параметров алгоритма"""
+        """Проверка параметров метода fit
+
+        Raises:
+            AttributeError - если один из параметров не проходит по ограничениям
+        """
         if not isinstance(self.__eps, float):
             raise AttributeError("epx must be a float")
         if not isinstance(self.__betta, float):

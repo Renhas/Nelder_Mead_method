@@ -1,12 +1,7 @@
 """
-Модуль с функционалом визуализации метода Нелдера-Мида
-
-Классы:
-    PlotSettings - управление графиком
-    NelderMead2DAnimation - анимация работы метода
+Визуализация работы метода Нелдера-Мида
 """
-import typing
-from typing import Union
+from typing import Union, Tuple, Callable, Sequence
 import matplotlib.figure
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -17,31 +12,19 @@ from nelder_mead.nelder_mead import NelderMead, Point
 
 
 class PlotSettings:
-    """Класс для работы с графиком
+    """Работа с графиком"""
+    def __init__(self, title: str, x_limits: Tuple[float, float],
+                 y_limits: Sequence[float], line_width: float = 1):
+        """Инициализатор класса
 
-    Методы класса:
-        plot_point(Point, str)
-        show()
-        set_style(str)
+        Args:
+            title: название графика
+            x_limits: диапазон значений по x
+            y_limits: диапазон значений по y
+            line_width: размер линии, соединяющей точки
 
-    Методы экземпляра:
-        contour_init(BaseFunction, float, float, int)
-
-    Свойства:
-        fig - фигура, на которой рисуется график
-        axes - оси графика
-        line - линия для точек симплекса
-        text - дополнительный текст в левом верхнем углу
-        title - название графика
-    """
-    def __init__(self, title: str, x_limits: tuple, y_limits: tuple,
-                 line_width: float = 1):
-        """Конструктор класса
-
-        :param title: название графика
-        :param x_limits: диапазон значений по x
-        :param y_limits: диапазон значений по y
-        :param line_width: размер линии, соединяющей точки
+        Raises:
+            AttributeError - если переданные параметры некорректны
         """
         if not isinstance(x_limits, tuple):
             raise AttributeError("x_limits must be a tuple")
@@ -57,13 +40,14 @@ class PlotSettings:
         plt.title(title)
 
     @staticmethod
-    def plot_point(true_point: Point, fmt: str = "ro"):
+    def plot_point(point: Point, fmt: str = "ro"):
         """Отрисовка одной точки
 
-        :param true_point: точка
-        :param fmt: стиль точки
+        Args:
+            point: точка
+            fmt: стиль точки в формате :mod:`matplotlib`
         """
-        plt.plot(true_point.values[0], true_point.values[1], fmt)
+        plt.plot(point.values[0], point.values[1], fmt)
 
     @staticmethod
     def show():
@@ -74,19 +58,46 @@ class PlotSettings:
     def set_style(style: str):
         """Установить стиль графика
 
-        :param style: название стиля
+        Args:
+            style: название стиля из списка стилей :mod:`matplotlib`
         """
         plt.style.use(style)
 
+    @property
+    def fig(self) -> matplotlib.figure.Figure:
+        """Фигура, на которой рисуется график"""
+        return self.__fig
+
+    @property
+    def axes(self) -> matplotlib.pyplot.axes:
+        """Оси графика"""
+        return self.__ax
+
+    @property
+    def line(self) -> matplotlib.pyplot.Line2D:
+        """Линия, проходящая по точкам"""
+        return self.__line
+
+    @property
+    def text(self) -> matplotlib.pyplot.Text:
+        """Текст в левом верхнем углу графика"""
+        return self.__text_on_plot
+
+    @property
+    def title(self) -> str:
+        """Название графика"""
+        return self.__title
+
     def contour_init(self, function: BaseFunction,
                      x_step: float = 0.05, y_step: float = 0.05,
-                     levels: Union[int, list] = 10):
+                     levels: Union[int, Sequence[float]] = 10):
         """Отрисовка линий уровня функции с двумя(!) переменными
 
-        :param function: функция
-        :param x_step: шаг, с которым генерируются точки по x
-        :param y_step: шаг, с которым генерируются точки по y
-        :param levels: количество уровней или список уровней
+        Args:
+            function: функция
+            x_step: шаг генерации точек по x
+            y_step: шаг генерации точек по y
+            levels: количество уровней или список значений функции
         """
         x_limits, y_limits = self.__x_limits, self.__y_limits
         x_data = np.arange(x_limits[0], x_limits[1], x_step)
@@ -96,59 +107,18 @@ class PlotSettings:
         zgrid = nm_func(xgrid, ygrid)
         self.__ax.contour(xgrid, ygrid, zgrid, levels=levels)
 
-    @property
-    def fig(self) -> matplotlib.figure.Figure:
-        """Фигура, на которой рисуется график
-
-        :return: фигура
-        """
-        return self.__fig
-
-    @property
-    def axes(self) -> matplotlib.pyplot.axes:
-        """Оси графика
-
-        :return: оси
-        """
-        return self.__ax
-
-    @property
-    def line(self) -> matplotlib.pyplot.Line2D:
-        """Линия, проходящая по точкам
-
-        :return: линия
-        """
-        return self.__line
-
-    @property
-    def text(self) -> matplotlib.pyplot.Text:
-        """Текст в левом верхнем углу графика
-
-        :return: текст
-        """
-        return self.__text_on_plot
-
-    @property
-    def title(self) -> str:
-        """Название графика
-
-        :return: название
-        """
-        return self.__title
-
 
 class NelderMead2DAnimation:
-    """Класс для анимации работы метода Нелдера-Мида
-
-    Методы:
-        animate(int, bool, *, Callable)
-        save(str)
-    """
+    """Анимация работы метода Нелдера-Мида"""
     def __init__(self, method: NelderMead, plot: PlotSettings):
-        """Конструктор класса
+        """Инициализатор класса
 
-        :param method: метод Нелдера-Мида в начальном состоянии
-        :param plot: класс, управляющий графиком
+        Args:
+            method: метод Нелдера-Мида в начальном состоянии
+            plot: объект для управления графиком
+
+        Raises:
+            AttributeError - если переданные параметры некорректны
         """
         if not isinstance(method, NelderMead):
             raise AttributeError("method must be a NelderMean")
@@ -161,50 +131,15 @@ class NelderMead2DAnimation:
         self.__all_x = []
         self.__all_y = []
 
-    def __save_points(self, method: NelderMead):
-        """Сохранение всех точек симплекса
-
-        :param method: метод Нелдера-Мида
-        """
-        sim = method.simplex
-        best, good = sim.best[0].values, sim.good[0].values
-        worst = sim.worst[0].values
-        self.__all_x.append([best[0], good[0], worst[0], best[0]])
-        self.__all_y.append([best[1], good[1], worst[1], best[1]])
-
-    def __init_animation(self) -> tuple:
-        """Инициализация первоначальных данных для анимации
-
-        :return: кортеж из одного элемента - линии на графике
-        """
-        self.__plot.line.set_data([], [])
-        return (self.__plot.line,)
-
-    def __animation(self, frame: int) -> tuple:
-        """Функция анимации, вызывается каждый кадр
-
-        :param frame: кадр анимации
-
-        :return: кортеж из одного элемента - линии на графике
-        """
-
-        index = frame
-        if index > len(self.__all_x) - 1:
-            index = len(self.__all_x) - 1
-        if self.__action is not None:
-            self.__action(frame)
-        self.__plot.line.set_data(self.__all_x[index], self.__all_y[index])
-        return (self.__plot.line,)
-
     def animate(self, interval: int = 300, *, blit: bool = False,
-                action: typing.Callable = None):
+                action: Callable = None):
         """Анимация работы метода Нелдера-Мида
 
-        :param interval: интервал между кадрами
-        :param blit: True - будут перерисовываться
-         только сильно меняющиеся объекты. False - перерисовывается всё.
-        :param action: действие в конце каждой итерации.
-         Callable-объект, принимающий номер кадра
+        Args:
+            interval: интервал между кадрами
+            blit: True - будут перерисовываться
+             только сильно меняющиеся объекты. False - перерисовывается всё.
+            action: действие в конце каждой итерации. Функция должна принимать значение кадра
         """
         self.__action = action
         self.__save_points(self.__method)
@@ -218,6 +153,41 @@ class NelderMead2DAnimation:
     def save(self, path: str):
         """Сохранение анимации в файл
 
-        :param path: путь к файлу
+        Args:
+            path: путь к файлу
         """
         self.__anim.save(path, writer="imagemagick")
+
+    def __save_points(self, method: NelderMead):
+        """Сохранение трёх точек симплекса"""
+        sim = method.simplex
+        best, good = sim.best[0].values, sim.good[0].values
+        worst = sim.worst[0].values
+        self.__all_x.append([best[0], good[0], worst[0], best[0]])
+        self.__all_y.append([best[1], good[1], worst[1], best[1]])
+
+    def __init_animation(self) -> Tuple[matplotlib.pyplot.Line2D]:
+        """Инициализация первоначальных данных для анимации
+
+        Returns:
+            Линия на графике
+        """
+        self.__plot.line.set_data([], [])
+        return (self.__plot.line,)
+
+    def __animation(self, frame: int) -> Tuple[matplotlib.pyplot.Line2D]:
+        """Функция анимации, вызывается каждый кадр
+
+        Args:
+            frame: кадр анимации
+
+        Returns:
+            Линия на графике
+        """
+        index = frame
+        if index > len(self.__all_x) - 1:
+            index = len(self.__all_x) - 1
+        if self.__action is not None:
+            self.__action(frame)
+        self.__plot.line.set_data(self.__all_x[index], self.__all_y[index])
+        return (self.__plot.line,)

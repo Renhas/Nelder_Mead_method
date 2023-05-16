@@ -1,37 +1,32 @@
-utilities package
+.. _utilities:
+
+Utilities
 =================
+Вспомогательные объекты, используемые модулями :ref:`nelder_mead <nm>` и :ref:`addons <addons>`.
 
-Submodules
-----------
-
-utilities.constraints module
+utilities.constraints
 ----------------------------
 
 .. automodule:: utilities.constraints
    :members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __init__
 
-utilities.functions module
+utilities.functions
 --------------------------
 
 .. automodule:: utilities.functions
    :members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __init__
 
-utilities.point module
+utilities.point
 ----------------------
 
 .. automodule:: utilities.point
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :special-members: __init__
