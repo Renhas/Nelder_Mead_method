@@ -2,8 +2,8 @@
 Модуль, адаптирующий метод Нелдера-Мида под задачу условной оптимизации.
 """
 from typing import Callable, Tuple, Sequence
-from utilities.point import Point
 from nelder_mead.nelder_mead import NelderMead
+from utilities.point import Point
 from utilities.constraints import Constraint
 from utilities.functions import BaseFunction
 

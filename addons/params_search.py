@@ -4,10 +4,10 @@
 from typing import Sequence, Tuple
 from itertools import product
 from nelder_mead.nelder_mead import NelderMead
+from nelder_mead.conditional_nm import ConditionalNelderMead
 from utilities.functions import BaseFunction
 from utilities.point import Point
 from utilities.constraints import Constraint
-from nelder_mead.conditional_nm import ConditionalNelderMead
 
 
 # pylint: disable=too-few-public-methods
